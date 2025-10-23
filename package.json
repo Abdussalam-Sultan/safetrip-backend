@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
@@ -24,6 +25,7 @@
     "multer": "^2.0.2",
     "mysql2": "^3.15.3",
     "nodemailer": "^7.0.10",
+    "pino": "^10.1.0",
     "pino-roll": "^4.0.0",
     "sequelize": "^6.37.7"
   },

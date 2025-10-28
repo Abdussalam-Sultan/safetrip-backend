@@ -69,9 +69,9 @@ npm install
 ```
 
 ### 3. Setup Environment Variables
-Create a .env file in the root directory using .env.example as a guide:
+Create a .env file in the root directory using .env.example file as a guide:
 ```
-PORT=5000
+PORT=3000
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=yourpassword
@@ -91,19 +91,19 @@ Import the Postman collection from /postman/safetrip_collection.json
 
 Test all endpoints:
 
--/api/auth/register
+- /api/auth/register
 
--/api/auth/login
+- /api/auth/login
 
--/api/contacts
+- /api/contacts
 
--/api/sos
+- /api/sos
 
--/api/checkin
+- /api/checkin
 
--/api/timeline
+- /api/timeline
 
--/api/nearby e.g /api/nearby?lat=1000&long=4000&type=service.police ...
+- /api/nearby e.g /api/nearby?lat=1000&long=4000&type=service.police ...
 
 ## Authors
 
@@ -113,6 +113,6 @@ Frontend/Mobile: React Native
 
 Built with ❤️ for campus and travel safety.
 
--Abdussalam Sultan
+- Abdussalam Sultan
 
 

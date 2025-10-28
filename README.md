@@ -36,7 +36,7 @@ This repository contains the **backend API** built with **Node.js**, **Express**
 ---
 
 ## Project Structure
-
+```
 safetrip-backend/
 │
 ├── src/
@@ -51,8 +51,9 @@ safetrip-backend/
 │
 ├── .env.example # Environment variable template
 ├── package.json
-└── README.md
+└── README.md`
 
+```
 ---
 
 ## ⚙️ Installation & Setup
@@ -111,7 +112,7 @@ Safetrip Development Team
 Backend: Node.js, Express, MySQL
 Frontend/Mobile: React Native
 
-Built with ❤️ for campus and travel safety.
+Built with ❤️ for travel safety.
 
 - Abdussalam Sultan
 

@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export default {
+ const APP_CONFIG =  {
     PORT: process.env.PORT || 3000,
     NODE_ENV: process.env.NODE_ENV || 'development',
     
@@ -23,4 +23,5 @@ export default {
     PINO_LOG_LEVEL_FILE: process.env.PINO_LOG_LEVEL_FILE,
 };
 
+export default APP_CONFIG;
 

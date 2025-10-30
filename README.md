@@ -1,6 +1,6 @@
 emergency-contacts-api
 
-This backend project allows save, view, update and delete their emergency contacts using a simple API
+This backend project allows users to save, view, update and delete their emergency contacts using a simple API
 
 Core Features
 - Create, Read, Update, and Delete emergency contacts

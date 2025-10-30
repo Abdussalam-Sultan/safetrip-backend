@@ -1,0 +1,29 @@
+{
+  "name": "emergency-contacts-api",
+  "version": "3.1.10",
+  "description": "A simple API to manage users and emergency contacts",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "express-validator": "^7.3.0",
+    "git": "^0.1.5",
+    "gitignore": "^0.7.0",
+    "init": "^0.1.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.8.7",
+    "mysql2": "^3.15.3",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

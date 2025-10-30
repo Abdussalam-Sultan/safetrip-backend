@@ -21,6 +21,8 @@ dotenv.config();
     EMAIL_SERVICE_PORT: process.env.EMAIL_SERVICE_PORT,
     PINO_LOG_LEVEL_CONSOLE: process.env.PINO_LOG_LEVEL_CONSOLE,
     PINO_LOG_LEVEL_FILE: process.env.PINO_LOG_LEVEL_FILE,
+
+    GEOAPIFY_API_KEY: process.env.GEOAPIFY_API_KEY,
 };
 
 export default APP_CONFIG;

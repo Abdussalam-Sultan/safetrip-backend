@@ -19,18 +19,8 @@ const CheckIn = sequelize.define('CheckIn', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  timestamp: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
-   createdAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
-  updatedAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
+}, {
+  timestamps: true,
 });
 
 export default CheckIn;

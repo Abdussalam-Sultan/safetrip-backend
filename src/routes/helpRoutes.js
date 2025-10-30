@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { helpCoordinates, nearbyHelp } from "../controllers/helpController.js";
+import { nearbyHelpFromCurrentLocation, nearbyHelpFromTravelDestination } from "../controllers/helpController.js";
 
 const router = Router();
 
-router.post('/help-coordinates', helpCoordinates);
-router.post('/nearby-help', nearbyHelp);
+router.post('/from-travel-address', nearbyHelpFromTravelDestination);
+router.post('/from-current-location', nearbyHelpFromCurrentLocation);

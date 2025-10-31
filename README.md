@@ -12,7 +12,7 @@ Setup
 1. Run npm install
 2. Add your .env file with:
 MONGO_URI=your_mongo_connection
-PORT=5000
+PORT=3000
 3. Start server with:
 npm run dev
-Server runs on: http://localhost:5000
+Server runs on: http://localhost:3000

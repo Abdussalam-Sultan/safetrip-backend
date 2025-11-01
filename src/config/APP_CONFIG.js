@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export default {
-    
+ const APP_CONFIG =  {
+    PORT: process.env.PORT || 3000,
     NODE_ENV: process.env.NODE_ENV || 'development',
     
     PORT: Number(process.env.PORT || 3000),
@@ -31,9 +31,8 @@ export default {
     PINO_LOG_LEVEL_CONSOLE: process.env.PINO_LOG_LEVEL_CONSOLE,
     PINO_LOG_LEVEL_FILE: process.env.PINO_LOG_LEVEL_FILE,
 
-    REDIS_TTL: Number(process.env.REDIS_TTL || 600),
-    REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379"
-
+    GEOAPIFY_API_KEY: process.env.GEOAPIFY_API_KEY,
 };
 
+export default APP_CONFIG;
 

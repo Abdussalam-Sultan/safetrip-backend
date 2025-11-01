@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "emergency-contacts-api",
   "version": "3.1.10",
   "description": "A simple API to manage users and emergency contacts",
@@ -7,23 +6,11 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
-=======
-  "name": "safetrip-backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
->>>>>>> a4aaf1ad393cc400616b651913b8e6998e185827
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
@@ -38,27 +25,5 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-=======
-    "axios": "^1.13.1",
-    "bcrypt": "^6.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "ejs": "^3.1.10",
-    "express": "^5.1.0",
-    "express-rate-limit": "^8.1.0",
-    "express-validator": "^7.3.0",
-    "ioredis": "^5.8.2",
-    "jsonwebtoken": "^9.0.2",
-    "multer": "^2.0.2",
-    "mysql2": "^3.15.3",
-    "nodemailer": "^7.0.10",
-    "pino": "^10.1.0",
-    "pino-roll": "^4.0.0",
-    "sequelize": "^6.37.7"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10",
-    "pino-pretty": "^13.1.2"
->>>>>>> a4aaf1ad393cc400616b651913b8e6998e185827
   }
 }

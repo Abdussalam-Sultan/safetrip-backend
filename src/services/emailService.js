@@ -19,7 +19,7 @@ const sendOtp = async (recipient, subject='Verify Your Account', username, otp, 
     };
 };
 
-const sendWelcomeEmail = async (recipient, subject='Welcome to Smart AI Jobber!', username) => {
+const sendWelcomeEmail = async (recipient, subject='Welcome to Safe Trip App!', username) => {
     try {
         const templatePath = path.join(__dirname, '../..', 'views', 'welcomeMessage.ejs');
         console.log(templatePath);

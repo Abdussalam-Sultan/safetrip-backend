@@ -5,7 +5,7 @@ import APP_CONFIG from './APP_CONFIG.js';
 const sequelize = new Sequelize(
   APP_CONFIG.DB_NAME,
   APP_CONFIG.DB_USER,
-  APP_CONFIG.DB_PASS,
+  APP_CONFIG.DB_PASSWORD,
   {
     host: APP_CONFIG.DB_HOST,
     dialect: 'mysql',

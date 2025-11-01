@@ -7,7 +7,11 @@ import cors from 'cors';
 import emailService from './services/emailService.js';
 import routes from './routes.js';
 import dotenv from 'dotenv';
+import timelineRoutes from './routes/timelineRoutes.js';
 
+
+import CheckIn from './models/CheckIn.js';
+import SOS from './models/SOS.js';
 dotenv.config();
 
 const port = APP_CONFIG.PORT;
@@ -18,6 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", apiLimiter);
 app.use('/api', routes);
+app.use('/api/timeline', timelineRoutes);
+
 
 
 

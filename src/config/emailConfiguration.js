@@ -7,7 +7,7 @@ import AppError from '../utils/AppError.js';
 const transporter = nodemailer.createTransport({
     host: APP_CONFIG.EMAIL_SERVICE_SMTP_HOST,
     port: APP_CONFIG.EMAIL_SERVICE_PORT,
-    secure: true,
+    secure: APP_CONFIG.EMAIL_SERVICE_SMTP_SECURE,
     auth: {
         user: APP_CONFIG.EMAIL_SERVICE_USER,
         pass: APP_CONFIG.EMAIL_SERVICE_APP_PASSWORD,
@@ -44,7 +44,7 @@ const sendEmail = async (recipient, subject, data) => {
 
     } catch (err) {
         logger.error(`Email sending failed: ${err}`);
-        throw AppError('Failed to send email', 500);
+        throw new AppError('Failed to send email', 500);
     };
 
 };

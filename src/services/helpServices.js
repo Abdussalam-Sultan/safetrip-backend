@@ -63,7 +63,35 @@ const nearbyHelpService = async (lat, lon, place_id=null) => {
     return helpServicesResults;
 };
 
-export default { getCoordinatesService, nearbyHelpService };
+
+const coordToLocation = async (req, res) => {
+  const { lat, lon } = req.body;
+
+  if (!lat || !lon) {
+    return res.status(400).json({ error: "Latitude and longitude are required" });
+  }
+
+  try {
+    const apiKey = process.env.GEOAPIFY_API_KEY || "YOUR_API_KEY_HERE";
+    const url = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=${apiKey}`;
+
+    const response = await axios.get(url);
+    const result = response.data.features[0];
+
+    if (!result) {
+      return res.status(404).json({ error: "Location not found" });
+    }
+
+    res.json({
+      success: true,
+      location: result.properties.formatted,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch location", details: error.message });
+  }
+});
+
+export default { getCoordinatesService, nearbyHelpService, coordToLocation };
 
 
 // const {lat, lon, place_id} = await getCoordinatesService("lagos")

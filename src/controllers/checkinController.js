@@ -1,17 +1,18 @@
 import CheckIn from "../models/CheckIn.js";
+import helpServices from "../services/helpServices.js";
 
 export const createCheckIn = async (req, res) => {
   try {
-    const { location, message } = req.body;
+    const { lat , long, message } = req.body;
     const userId = req.user?.id;
 
-    if (!userId || !location) {
+    if (!userId || !lat || !long) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     const checkIn = await CheckIn.create({
       userId,
-      location: location || null,
+      location: helpServices.formatCoordinates(lat, long) || (`${lat}, ${long}`) || "Unknown location",
       message: message || "I'm safe",
     });
 

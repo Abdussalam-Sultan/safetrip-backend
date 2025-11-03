@@ -66,5 +66,5 @@ const nearbyHelpService = async (lat, lon, place_id=null) => {
 export default { getCoordinatesService, nearbyHelpService };
 
 
-const {lat, lon, place_id} = await getCoordinatesService("lagos")
-await nearbyHelpService(lat, lon, place_id);
+// const {lat, lon, place_id} = await getCoordinatesService("lagos")
+// await nearbyHelpService(lat, lon, place_id);

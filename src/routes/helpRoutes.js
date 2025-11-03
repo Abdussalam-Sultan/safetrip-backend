@@ -5,3 +5,4 @@ const router = Router();
 
 router.post('/from-travel-address', nearbyHelpFromTravelDestination);
 router.post('/from-current-location', nearbyHelpFromCurrentLocation);
+export default router;

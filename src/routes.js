@@ -5,7 +5,7 @@ import express from 'express';
 //import sosRoutes from './routes/sosRoutes.js';
 import checkinRoutes from './routes/checkinRoutes.js';
 //import timelineRoutes from './routes/timelineRoutes.js';
-//import helpRoutes from './routes/helpRoutes.js';
+import helpRoutes from './routes/helpRoutes.js';
 const router = express.Router();
 
 
@@ -14,6 +14,6 @@ const router = express.Router();
 //router.use('/sos', sosRoutes);
 router.use('/checkins', checkinRoutes);
 //router.use('/timeline', timelineRoutes);
-//router.use('/help', helpRoutes);
+router.use('/help', helpRoutes);
 
 export default router;

@@ -13,7 +13,7 @@ const router = express.Router();
 //router.use('/contacts', contactRoutes);
 //router.use('/sos', sosRoutes);
 router.use('/checkins', checkinRoutes);
-//router.use('/timeline', timelineRoutes);
+router.use('/timeline', timelineRoutes);
 router.use('/help', helpRoutes);
 
 export default router;

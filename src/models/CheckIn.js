@@ -21,6 +21,8 @@ const CheckIn = sequelize.define('CheckIn', {
   },
 }, {
   timestamps: true,
+  updatedAt: false,
+  createdAt: true,
 });
 
 export default CheckIn;

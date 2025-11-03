@@ -156,7 +156,7 @@ const changePasswordController = async (req, res) => {
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array()[0].msg });
 
   try {
-    const { oldPassword, newPassword } = req.body;
+    const { newPassword } = req.body;
     const userId = req.user.id;
     await changePassword(userId, oldPassword, newPassword);
     

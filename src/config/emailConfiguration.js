@@ -23,7 +23,7 @@ const transporter = nodemailer.createTransport({
 
     } catch (error) {
         logger.error(`Email server verification failed: ${error}`)
-        throw new AppError("Email service verification failed", 500);
+       // throw new AppError("Email service verification failed", 500);
     };
 })();
 

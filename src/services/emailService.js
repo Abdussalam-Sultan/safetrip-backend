@@ -3,6 +3,7 @@ import ejs from 'ejs';
 import path from 'path';
 import logger from "../config/logger.js";
 
+
 const __dirname = import.meta.dirname;
 
 const sendOtp = async (recipient, subject='Verify Your Account', username, otp, otpTime) => {

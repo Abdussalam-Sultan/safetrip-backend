@@ -6,7 +6,9 @@ import apiLimiter from "./middleware/rateLimiter.js";
 import cors from 'cors';
 import emailService from './services/emailService.js';
 import routes from './routes.js';
+import dotenv from 'dotenv';
 
+dotenv.config();
 
 const port = APP_CONFIG.PORT;
 
@@ -15,6 +17,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api", apiLimiter);
+app.use('/api', routes);
 
 
 

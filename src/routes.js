@@ -4,7 +4,7 @@ import express from 'express';
 //import contactRoutes from './routes/contactRoutes.js';
 //import sosRoutes from './routes/sosRoutes.js';
 import checkinRoutes from './routes/checkinRoutes.js';
-//import timelineRoutes from './routes/timelineRoutes.js';
+import timelineRoutes from './routes/timelineRoutes.js';
 import helpRoutes from './routes/helpRoutes.js';
 const router = express.Router();
 

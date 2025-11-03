@@ -1,5 +1,5 @@
 // controllers/timelineController.js
-import SOS from "../models/SOS.js";
+import SOS from "../models/SOSAlert.js";
 import CheckIn from "../models/CheckIn.js";
 
 export const getUserTimeline = async (req, res) => {

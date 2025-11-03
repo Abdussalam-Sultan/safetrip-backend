@@ -3,18 +3,18 @@ import helpServices from "../services/helpServices.js";
 
 export const createCheckIn = async (req, res) => {
   try {
-    const { lat , long, message } = req.body;
+    const { lat , lon, message } = req.body;
     const userId = req.user?.id;
 
-    if (!userId || !lat || !long) {
+    if (!userId || !lat || !lon) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     const checkIn = await CheckIn.create({
       userId,
       lat,
-      long,
-      location: await helpServices.formatCoordinates(lat, long) || "Unknown location",
+      lon,
+      location: await helpServices.formatCoordinates(lat, lon) || "Unknown location",
       message: message || "I'm safe",
     });
 

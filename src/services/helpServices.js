@@ -89,7 +89,7 @@ const coordToLocation = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch location", details: error.message });
   }
-});
+};
 
 export default { getCoordinatesService, nearbyHelpService, coordToLocation };
 

@@ -12,7 +12,9 @@ export const createCheckIn = async (req, res) => {
 
     const checkIn = await CheckIn.create({
       userId,
-      location: helpServices.formatCoordinates(lat, long) || (`${lat}, ${long}`) || "Unknown location",
+      lat,
+      long,
+      location: await helpServices.formatCoordinates(lat, long) || "Unknown location",
       message: message || "I'm safe",
     });
 

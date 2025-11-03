@@ -1,4 +1,3 @@
-// controllers/timelineController.js
 import SOS from "../models/SOSAlert.js";
 import CheckIn from "../models/CheckIn.js";
 
@@ -6,11 +5,9 @@ export const getUserTimeline = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Fetch both types of activities
     const sosList = await SOS.findAll({ where: { userId } });
     const checkInList = await CheckIn.findAll({ where: { userId } });
 
-    // Add a type field to each
     const sosEvents = sosList.map(item => ({
       id: item.id,
       type: "sos",
@@ -27,7 +24,6 @@ export const getUserTimeline = async (req, res) => {
       createdAt: item.createdAt,
     }));
 
-    // Merge and sort by date
     const timeline = [...sosEvents, ...checkInEvents].sort(
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
     );

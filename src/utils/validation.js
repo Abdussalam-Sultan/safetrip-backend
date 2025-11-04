@@ -1,0 +1,149 @@
+
+//validator ensure that user sends in the required information needed for our authcontroller
+
+import { body } from "express-validator";
+
+const registrationValidator = [
+    body("username").notEmpty().withMessage("Username is required")
+    .isLength({min:3}).withMessage("Username must be atleast three characters long"),
+
+    body("email").notEmpty().withMessage("Email is required")
+    .isEmail().withMessage("invalid email format"),
+    //.bail(),
+    
+    body("password").notEmpty().withMessage("Password is required")
+    .isLength({min:6}).withMessage("Password must be atleast 6 characters"),
+
+    //Confirm password must match password
+    body("confirmPassword").notEmpty()
+    .withMessage("Confirm password is required")
+    .custom((value, {req})=>{
+        if (req.body.password && value !== req.body.password) {
+            throw new error ("Password did not match");
+        }
+        return true;
+    }),
+    
+    body("phoneNumber").optional().isMobilePhone()
+    .withMessage("Invalid phone number"),
+    //.bail(),
+
+    body("gender").notEmpty().withMessage("Gender is required")
+    .isIn(["male", "female", "others"])
+    .withMessage("Gender should be male, female or others"),
+];
+
+const loginValidator = [
+    body("email").notEmpty()
+    .withMessage("Invalid Email or Password")
+    .isEmail()
+    .withMessage("Invalid Email or Password")
+    .bail(),
+    body("password").notEmpty().withMessage("Invalid Email or Password")
+    .isLength({min:6})
+    .withMessage("Password must be atleast 6 characters")
+];
+
+
+const changePasswordValidator = [
+  body('oldPassword')
+    .notEmpty()
+    .withMessage('Old password is required'),
+
+  body('newPassword')
+    .notEmpty()
+    .withMessage('New password is required')
+    .isLength({ min: 8 })
+    .withMessage('New password must be at least 8 characters'),
+
+  body('confirmPassword')
+    .notEmpty()
+    .withMessage('Confirm password is required')
+    .custom((value, { req }) => {
+      if (value !== req.body.newPassword) {
+        throw new Error('Confirm password does not match new password');
+      }
+      return true;
+    })
+];
+
+
+
+
+
+// //Error in coding
+// const changePasswordValidator = [
+//   body("oldPassword")
+//     .notEmpty()
+//     .withMessage("Old password is required"),
+
+//   body("newPassword")
+//     .notEmpty()
+//     .withMessage("New password is required")
+//     .isLength({ min: 8 })
+//     .withMessage("New password must be at least 8 characters long"),
+
+//   body("confirmPassword")
+//     .notEmpty()
+//     .withMessage("Confirm password is required")
+//     .custom((value, { req }) => {
+//       if (value !== req.body.newPassword) {
+//         throw new Error("Passwords do not match");
+//       }
+//       return true;
+//     })
+// ];
+
+
+// const changePasswordValidator = [
+//     body("newpassword").notEmpty()
+//     .withMessage("New password is required")
+//     .isLength({min:8})
+//     .withMessage("New password must atleast 8 characters"),
+
+//     body("confirmPassword").notEmpty()
+//     .withMessage("New password is required")
+//     .custom((value, {req})=>{
+//         if(value !== req.body.password) {
+//             throw new error ("Password did not match")
+//         }
+//         return true;
+//     })
+// ];
+
+const forgotPasswordValidator = [
+    body("email")
+    .notEmpty().withMessage("Email is required")
+    .isEmail().withMessage("Invalid email"),
+];
+
+const resetPasswordValidator = [
+    body("email")
+    .notEmpty().withMessage("Email is required")
+    .isEmail().withMessage("Invalid email"),
+    body("otp")
+    .notEmpty().withMessage("OTP is required")
+    .isLength({ min: 6, max: 6 }).withMessage("OTP must be 6 characters"),
+    body("newPassword")
+    .notEmpty().withMessage("New password is required")
+    .isLength({ min: 8 }).withMessage("New password must be at least 8 characters"),
+];
+
+const verifyEmailValidation = [
+    body("email")
+    .notEmpty().withMessage("Email is required")
+    .isEmail().withMessage("Invalid email"),
+    body("otp")
+    .notEmpty().withMessage("OTP is required")
+    .isLength({ min: 6, max: 6 }).withMessage("OTP must be 6 characters"),
+]
+//const deleteValidator = []
+
+export {
+    loginValidator,
+    registrationValidator,
+    changePasswordValidator,
+    forgotPasswordValidator,
+    resetPasswordValidator,
+    verifyEmailValidation
+} 

@@ -3,7 +3,7 @@ import CheckIn from "../models/CheckIn.js";
 
 export const getUserTimeline = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { userId } = req.user?.id;
 
     const sosList = await SOS.findAll({ where: { userId } });
     const checkInList = await CheckIn.findAll({ where: { userId } });

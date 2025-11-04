@@ -1,11 +1,11 @@
 import {body} from "express-validator";
 
 const createUserValidation = [
-    body("fullname")
-    .notEmpty().withMessage("Fullname is required")
-    .isLength({min:4}).withMessage("Fullname must be atleast 4 charcters long"),
+    body("name")
+    .notEmpty().withMessage("name is required")
+    .isLength({min:4}).withMessage("name must be atleast 4 charcters long"),
     
-    body("emailAddress").notEmpty().withMessage("Email address is required")
+    body("email").notEmpty().withMessage("Email address is required")
     .isEmail().withMessage("Invalid email format"),
 
     body("password").notEmpty().withMessage("Provide your Password")
@@ -20,12 +20,12 @@ const createUserValidation = [
         return true;
     }),
 
-    body("phoneNumber").optional().isMobilePhone()
+    body("phone").optional().isMobilePhone()
     .withMessage("Invalid phone number"),
 ];
 
 const loginValidator = [
-    body("emailAddress").notEmpty()
+    body("email").notEmpty()
     .withMessage("Email is required")
     .isEmail()
     .withMessage("Invalid email format"),
@@ -36,12 +36,14 @@ const loginValidator = [
 ];
 
 const changePasswordValidator = [
-    body("newpassword").notEmpty
+    body("oldPassword").notEmpty
+    .withMessage('old password is require'),
+    body("newpassword").notEmpty()
     .withMessage("New password is required")
     .isLength({min:8})
     .withMessage("New password must atleast 8 characters"),
 
-    body("confirmPassword").notEmpty
+    body("confirmPassword").notEmpty()
     .withMessage("New password is required")
     .custom((value, {req})=>{
         if(value !== req.body.password) {

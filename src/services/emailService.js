@@ -3,6 +3,7 @@ import ejs from 'ejs';
 import path from 'path';
 import logger from "../config/logger.js";
 
+
 const __dirname = import.meta.dirname;
 
 const sendOtp = async (recipient, subject='Verify Your Account', username, otp, otpTime) => {
@@ -47,24 +48,8 @@ const sendPasswordRecoveryEmail = async (recipient, subject='Password Reset Requ
     };
 };
 
-const sendRecommendedJobsEmail = async (recipient, subject='Your Job Recommendations', username, jobs) => {
-    try {
-        const templatePath = path.join(__dirname, '../..', 'views', 'recommendedJobs.ejs');
-        console.log(templatePath);
-        
-        const htmlData = await ejs.renderFile(templatePath, {user: username, recommendedJobs: jobs? JSON.parse(jobs) : []});
-        await sendEmail(recipient, subject, htmlData);
-
-        logger.info(`Job recommedations sent to ${username} successfully.`);
-    } catch (error) {
-        logger.error(`Error sending job recommendations: ${error}`)
-    };
-};
-
-
 export default {
     sendOtp,
     sendWelcomeEmail,
-    sendRecommendedJobsEmail,
     sendPasswordRecoveryEmail,
 };

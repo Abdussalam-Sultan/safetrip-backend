@@ -4,6 +4,6 @@ import { getUserTimeline } from "../controllers/timelineController.js";
 
 const router = express.Router();
 
-router.get("/:userId", getUserTimeline);
+router.get("/", getUserTimeline);
 
 export default router;

@@ -7,12 +7,16 @@ import cors from 'cors';
 import emailService from './services/emailService.js';
 import routes from './routes.js';
 import dotenv from 'dotenv';
+import User from './models/User.js';
+import cookieParser from 'cookie-parser';
+
 
 dotenv.config();
 
 const port = APP_CONFIG.PORT;
 
 const app = express();
+app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -21,7 +25,6 @@ app.get("/", (req, res) => {
 });
 app.use("/api", apiLimiter);
 app.use('/api', routes);
-
 
 
 sequelize.sync()

@@ -26,6 +26,9 @@ const authMiddleware = (req, res, next) => {
         if (error.name === "JsonWebTokenError") {
             return res.status(403).json({ success: false, message: "Invalid token." });
         };
+        logger.error(`JWT verification failed: ${error.message}`);
+console.log("Error name:", error.name);
+console.log("Error stack:", error.stack);
 
         return res.status(500).json({ success: false, message: "Authentication"});
     };

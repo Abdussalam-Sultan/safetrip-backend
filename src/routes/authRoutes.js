@@ -19,7 +19,7 @@ import {
     forgotPasswordValidator
 } from "../utils/validation.js";
 import validationMiddleware from "../middleware/validationMiddleware.js";
-import { authMiddleware, verifyAccountMiddleware } from "../services/authMiddleware.js";
+import { authMiddleware, verifyAccountMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -30,7 +30,7 @@ router.post("/verify", verifyEmailValidation, validationMiddleware, verify);
 router.get("/send-otp", verifyAccountMiddleware, resendOtp);
 router.post("/forgot", forgotPasswordValidator, validationMiddleware, forgot);
 router.get("/logout", logout);
-router.post("/change-password", changePasswordController, authMiddleware, changePassword)
+router.post("/change-password", authMiddleware, changePasswordController, loginValidator, changePassword)
 //router.post("/reset", )
 
 export default router;

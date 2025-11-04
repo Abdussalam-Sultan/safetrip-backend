@@ -1,14 +1,14 @@
-import AppError from "../utils/AppError"
+import AppError from "../utils/AppError.js";
 import {
     registerUser,
     login,
-    verifyUser,
     logoutUser,
+    verifyUser,
   forgotPassword,
   resetPassword,
   changePassword,
   resendOtpService
-} from "../services/userServices";
+} from "../services/userServices.js";
 import { validationResult } from "express-validator";
 import emailService from "../services/emailService.js";
 import { getOtp, getOtpExpiryTime } from "../utils/otpGen.js";
@@ -20,18 +20,22 @@ async function createUser (req, res){
     const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array()[0].msg });
 
-    const {fullname, emailAddress, password, phoneNumber} = req.body;
+    const {name, email, password, phone} = req.body;
 //2
   const otp = getOtp();
   const otpTimeMins = APP_CONFIG.OTP_EXPIRY_TIME_MINS;
   const otpTime = getOtpExpiryTime(otpTimeMins);
   
-  const token = await registerUser(fullname, emailAddress, password, phoneNumber, otp, otpTime);
+  const token = await registerUser({
+  name,
+  email,
+  password,
+  phone,
+  otp,
+  otpTime
+});
 
   if (!token) return res.status(400).send("Invalid credentials");
-
-    registerUser({fullname, emailAddress, password, phoneNumber})  
-    res.status(201).json({Success: true, message:"User Registered"})
 
 //send otp email
     try {
@@ -89,9 +93,9 @@ const resendOtp = async (req, res) => {
 };
 
 async function signIn (req, res){
-    const {emailAddress, password} = req.body;
+    const {email, password} = req.body;
     try {
-    const user =  await login({emailAddress, password})
+    const user =  await login({email, password})
     res.status(201).json({Success: true, data: user})
                 
     } catch (error) {
@@ -153,17 +157,34 @@ const reset = async (req, res) => {
 //  Change password (for logged-in user)
 const changePasswordController = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array()[0].msg });
-
+  if (!errors.isEmpty()) return res.status(400).json({success: false, message: "Validation error", data: errors.array().map(e => e.msg)});
+  
+  
+  
   try {
+    if(!req.user || !req.user.id )
+    {
+      return res.status(401).json({success: false, message: "User not authenticated"})
+    }
     const { oldPassword, newPassword } = req.body;
     const userId = req.user.id;
     await changePassword(userId, oldPassword, newPassword);
     
     // res.render("profile", { message: "Password changed successfully!" });
-    res.status(201).json({ message: "Password change was successful."});
+    res.status(201).json({success: true, 
+      message: "Password change was successful.",
+    user: {
+      id: req.user.id,
+      username: req.user.name,
+      
+    }
+    });
+    
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
@@ -179,8 +200,8 @@ const changePasswordController = async (req, res) => {
 // };
 
 // function verifyEmail(req, res){
-//     const {emailAddress} = req.body;
-//     registerUser({emailAddress})
+//     const {email} = req.body;
+//     registerUser({email})
 //     res.status(201).json({Success: true, message:"Email verified Succesfully"})
 //     try {
         

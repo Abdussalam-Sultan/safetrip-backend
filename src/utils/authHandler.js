@@ -7,7 +7,7 @@ import User from "../models/User.js"
 
 async function createtoken(user){
     try {
-        const payload = {id:user.user_UUID, fullname: user.fullname}
+        const payload = {id:user.user_UUID, name: user.name}
         return jwt.sign(payload, APP_CONFIG.JWT_SECRET, {
             expiresIn: APP_CONFIG.JWT_EXPIRES_IN,
         })
@@ -28,7 +28,7 @@ async function verifytoken(token){
 
 async function createRefreshToken(user, token){
     try {
-        const payload = {id:user.user_UUID, fullname: user.fullname, tokenid: token}
+        const payload = {id:user.user_UUID, name: user.name, tokenid: token}
         return jwt.sign(payload, APP_CONFIG.JWT_SECRET, {
             expiresIn: APP_CONFIG.JWT_EXPIRES_IN,
         })

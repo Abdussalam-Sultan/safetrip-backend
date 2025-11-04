@@ -1,11 +1,10 @@
-const Contact = require("../models/contact");
+import Contact from '../models/contact.js';
 
 // Create a new contact
-exports.createContact = async (req, res) => {
+export const createContact = async (req, res) => {
   try {
     const { userId, name, phone, email, relationship } = req.body;
-
-    const contact = await Contact.create({ userId, name, phone, email, relationship });
+   const contact = await Contact.create({ userId, name, phone, email, relationship });
     res.status(201).json(contact);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -13,7 +12,7 @@ exports.createContact = async (req, res) => {
 };
 
 // Get all contacts
-exports.getContacts = async (req, res) => {
+export const getContacts = async (req, res) => {
   try {
     const contacts = await Contact.findAll();
     res.json(contacts);
@@ -23,7 +22,7 @@ exports.getContacts = async (req, res) => {
 };
 
 // Get contacts by userId
-exports.getContactsByUser = async (req, res) => {
+export const getContactsByUser = async (req, res) => {
   try {
     const { userId } = req.params;
     const contacts = await Contact.findAll({ where: { userId } });
@@ -34,7 +33,7 @@ exports.getContactsByUser = async (req, res) => {
 };
 
 // Update contact
-exports.updateContact = async (req, res) => {
+export const updateContact = async (req, res) => {
   try {
     const contact = await Contact.findByPk(req.params.id);
     if (!contact) return res.status(404).json({ message: "Contact not found" });
@@ -47,7 +46,7 @@ exports.updateContact = async (req, res) => {
 };
 
 // Delete contact
-exports.deleteContact = async (req, res) => {
+export const deleteContact = async (req, res) => {
   try {
     const contact = await Contact.findByPk(req.params.id);
     if (!contact) return res.status(404).json({ message: "Contact not found" });

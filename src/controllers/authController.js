@@ -9,16 +9,30 @@ import User from "../models/User.js";
 import { getOtp, getOtpExpiryTime } from "../utils/otpGen.js";
 import { validationResult } from "express-validator";
 import APP_CONFIG from "../config/APP_CONFIG.js";
+import logger from "../config/logger.js";
 
 
 
 async function registerUser (req, res){
   try {
-    const {username, email, password, phoneNumber, gender, role = "user"} = req.body;
-    await createUser({username, email, password, gender, phoneNumber, role})
-    res.status(201).json({Success: true, message:"User Registered"})
-    
+      const {username, email, password, phoneNumber, gender, role = "user"} = req.body;
+      
+      const existingUser = await User.findOne({
+        $or: [{ email }, { username }, { phoneNumber }],
+      });
+
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: "User already exists. Please check your details or try a different account.",
+        });
+      }
+
+      await createUser({username, email, password, gender, phoneNumber, role})
+      res.status(201).json({Success: true, message:"User Registered Successfully."})
+      
     } catch (error) {
+      logger.error("Registration Error:", error);
        throw new AppError(error || "Registration Failed")
     }
 };

@@ -5,7 +5,7 @@ import  {
     loginUser, 
     logoutUser
 } from "../services/userServices.js";
-import User from "../models/user.js";
+import User from "../models/User.js";
 import config from "../config/index.js";
 import { getOtp, getOtpExpiryTime } from "../utils/otpGen.js";
 import { validationResult } from "express-validator";
@@ -13,11 +13,11 @@ import { validationResult } from "express-validator";
 
 
 async function registerUser (req, res){
+  try {
     const {username, email, password, phoneNumber, gender, role = "user"} = req.body;
-    createUser({username, email, password, gender, phoneNumber, role})
+    await createUser({username, email, password, gender, phoneNumber, role})
     res.status(201).json({Success: true, message:"User Registered"})
-    try {
-        
+    
     } catch (error) {
        throw new AppError(error || "Registration Failed")
     }

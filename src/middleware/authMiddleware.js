@@ -17,7 +17,6 @@ const authMiddleware = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
     const userId = decoded.userId || decoded.id
-    //req.user = { id: decoded.userId || decoded.id }; // Make sure your JWT payload has userId
     
      if (!userId) {
       return res.status(401).json({ success: false, message: 'User not authenticated' });

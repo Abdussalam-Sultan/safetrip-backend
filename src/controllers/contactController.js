@@ -46,6 +46,22 @@ export const getUserContacts = async (req, res) => {
   }
 };
 
+
+export const updateContact = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const contact = await Contact.findByPk(id);
+    if (!contact) return res.status(404).json({ message: "Contact not found" });
+
+    await contact.update(req.body);
+    res.json(contact);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 export const deleteContact = async (req, res) => {
   try {
     const { id } = req.params;

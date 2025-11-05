@@ -3,7 +3,6 @@ import APP_CONFIG from "./APP_CONFIG";
 
 const redis = new IORedis(APP_CONFIG.REDIS_URL);
 
-// Add helpful connection logs
 redis.on("connect", () => {
   console.log("Redis connected successfully");
 });

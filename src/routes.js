@@ -14,12 +14,12 @@ const router = express.Router();
 
 
 router.use('/auth', authRoutes);
-router.use('/contacts', contactRoutes);
-router.use('/sos', sosRoutes);
+router.use('/contacts',authMiddleware, contactRoutes);
+router.use('/sos',authMiddleware, sosRoutes);
 router.use('/checkins',authMiddleware, checkinRoutes);
-router.use('/timeline', timelineRoutes);
-router.use('/help', helpRoutes);
-router.use("/tips", tipRoutes);
-router.use('/admin', adminRoutes)
+router.use('/timeline',authMiddleware, timelineRoutes);
+router.use('/help',authMiddleware, helpRoutes);
+router.use("/tips",authMiddleware, tipRoutes);
+router.use('/admin',authMiddleware, adminRoutes)
 
 export default router;

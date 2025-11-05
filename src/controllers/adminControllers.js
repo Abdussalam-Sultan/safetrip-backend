@@ -1,46 +1,9 @@
-/* import { deleteUserService, getAllUsersServices, getSingleUserService, getStatsService } from "../services/adminService.js";
 
-
-export const getAllUsers = async (req, res) => {
-    const users = await getAllUsersServices();
-    if (!users) return res.status(500).json({ message: "Error fetching all users"});
-
-    res.status(200).json({ success: true, message: "All users retrieved", users});
-};
-
-export const getSingleUser = async (req, res) => {
-    const { id } = req.params;
-    const user = await getSingleUserService(id);
-    if (!user) return res.status(404).json({ message: "User does not exist"});
-
-    res.status(200).json({ success: true, message: "User detail retrieved", user});
-};
-
-export const deleteUser = async (req, res) => {
-    const { id } = req.params
-    const user = await deleteUserService(id);
-
-    if (!user) return res.status(404).json({ message: "Invalid parameter "});
-
-    res.status(200).json({ success: true, message: `User ${id} deleted successfully`});
-};
-
-export const getStats = async (req, res) => {
-    const stats = await getStatsService();
-
-    if (!stats) return res.status(500).json({ message: "Error fetching statistics" });
-
-    return res.status(200).json({ success: true, message: "SafeTrip stats fetched successfully", stats});
-}; */
-
-
-// src/controllers/adminController.js
 import User from "../models/User.js";
 import Sos from "../models/SOSAlert.js";
 import CheckIn from "../models/CheckIn.js";
 import Contact from "../models/Contact.js";
 
-// GET all users
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
@@ -52,7 +15,6 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// DELETE user by ID
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -65,7 +27,6 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-// GET all SOS alerts
 export const getAllSos = async (req, res) => {
   try {
     const sos = await Sos.findAll({
@@ -77,7 +38,6 @@ export const getAllSos = async (req, res) => {
   }
 };
 
-// GET all Check-Ins
 export const getAllCheckIns = async (req, res) => {
   try {
     const checkins = await CheckIn.findAll({
@@ -89,7 +49,6 @@ export const getAllCheckIns = async (req, res) => {
   }
 };
 
-// GET all Contacts
 export const getAllContacts = async (req, res) => {
   try {
     const contacts = await Contact.findAll({
@@ -101,7 +60,6 @@ export const getAllContacts = async (req, res) => {
   }
 };
 
-// Dashboard overview (stats)
 export const getOverview = async (req, res) => {
   try {
     const totalUsers = await User.count();

@@ -3,7 +3,8 @@ import  {
     changePassword,
     createUser, 
     loginUser, 
-    logoutUser
+    logoutUser,
+    verifyUser
 } from "../services/userServices.js";
 import User from "../models/User.js";
 import { getOtp, getOtpExpiryTime } from "../utils/otpGen.js";

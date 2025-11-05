@@ -53,8 +53,6 @@ async function verifyEmail (req, res) {
     logger.error(error.message);
     throw new AppError(error.nessage, 500);
   };
-
-  res.clearCookie("token");
   res.status(200).json({ message: "Account verification was successful" });
 };
 

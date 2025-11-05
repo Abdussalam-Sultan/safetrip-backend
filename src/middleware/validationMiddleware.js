@@ -1,16 +1,16 @@
 import { validationResult } from "express-validator";
 
 const myValidationResult = validationResult.withDefaults({
-    formatter: error => error.msg,
-})
+  formatter: error => error.msg,
+});
 
-const validationMiddleware = (req, res, next) =>{
+const validationMiddleware = (req, res, next) => {
     const result = myValidationResult(req)
-    
+
     if(!result.isEmpty()){
         return res.status(400).json({
             success: false,
-            messeage: "Validation error",
+            message: "Validation error",
             data: result.array()
         })
     }

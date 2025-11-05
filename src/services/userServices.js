@@ -1,63 +1,94 @@
-import User from "../models/User.js";
-import Utils from "../utils/authHandler.js";
-import bcrypt from "bcrypt"
+import User from "../models/user.js";
+import Utils from "../utils/Auth.js"
+import bcrypt from "bcryptjs";
 
 
-//for this services, we need to check if users exists
+//for this services we need to check if users exists
+async function createUser (userData) {
+    const checkEmailExists = await User.findOne({where:
+         { email:userData.email }
+        });
+        if(checkEmailExists) {
+            throw new Error("Email already exist")
+        }
+        
 
-async function registerUser(userData){
-    const checkEmailExist = await User.findOne({
-        where: {email: userData.email}
-    });
-    if(checkEmailExist) throw new Error("Email already exist")
+    const checkUsernameExists = await User.findOne({where:
+         { username:userData.username }
+        });
+        if(checkUsernameExists) {
+            throw new Error("Username already exist")
+        }
 
+    const newUser = await User.create(userData);
     
-    const checkFullnameExist = await User.findOne({
-        where: {name: userData.name}
-    });
-    if(checkFullnameExist) throw new Error("Username already exist")
-
-    const newUser = await User.create(userData)
-
     return newUser;
 };
 
-async function login(loginCredentials){
+async function loginUser(loginCrendentials) {
     const user = await User.findOne({where:
-        {email:loginCredentials.email}
+         { email:loginCrendentials.email }
+        });
+        if (!user) throw new Error("Invalid Email or Password")
+
+    //Check to see if password is valid
+    const isPasswordMatch = await user.verifyPassword(
+        loginCrendentials.password
+    );
+    
+    if (!isPasswordMatch) throw new Error("Invalid email or password")
+
+  //manual way to bring in your jsonwebtoken
+  const token = await Utils.generatetoken(user);
+  const refreshToken = await Utils.generateRefreshToken(user, token);
+  return {
+      userUUID: user.user_uuid, 
+      email: user.email, username:
+      user.username, phone: user.phoneNumber || null,
+      profilePicture: user.profilePicture || null, gender: user.gender,
+      role: user.role, token,
+      refreshToken,
+      }
+};
+
+
+const logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none"
     });
-    if (!user) throw new Error("Invalid Email or Password")
 
-//Checks for Valid Password
-const isPasswordMatch = await user.verifyPassword(
-    loginCredentials.password
-);
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully"
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error during logout",
+      error: err.message
+    });
+  }
+};
 
-if (!isPasswordMatch) throw new Error("Invalid Email or Password")
 
-const token = Utils.generatetoken(user)
-const RefreshToken = Utils.generateRefreshToken(user, token)
-//delete user.password
-return {
-  userUUID: user.user_uuid,
-  email: user.email,
-  name: user.name,
-  phone: user.phone || null,
-  token,
-  RefreshToken
+async function refreshUserToken(refreshToken){
+    const decoded = await Utils.verifyRefreshToken(refreshToken)
+    const user = await User.findOne({where: {user_uuid: decoded.id}});
+    if(!user) throw new Error("User not found")
+        
+    const newToken = await Utils.generatetoken(user);
+    const newRefreshToken = await Utils.generateRefreshToken(user, newToken)
+
+    return{
+        token: newToken,
+        refreshToken: newRefreshToken,
+    };
 }
-};
 
-const verifyUser = async (email, otp) => {
-  const user = await User.findOne({ where: { email } });
-  if (!user || !user.otp || user.otp !== otp) return null;
-  
-  user.verified = true;
-  user.otp = null;
-  user.otptime = null;
 
-  await user.save();
-};
 
 const forgotPassword = async (req, res, next) => {
   try {
@@ -89,39 +120,6 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
-const resendOtpService = async (id, otp, otpTime) => {
-  const user = await User.findByPk( id );
-  if (!user) return null;
-
-  user.otp = otp;
-  user.otpTime = otpTime;
-
-  await user.save();
-
-  return user;
-};
-
-const logoutUser = async (req, res) => {
-  try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none"
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Logged out successfully"
-    });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Server error during logout",
-      error: err.message
-    });
-  }
-};
-
 // Reset password using OTP
 const resetPassword = async (email, otp, newPassword) => {
   const user = await User.findOne({ where: { email } });
@@ -138,32 +136,43 @@ const resetPassword = async (email, otp, newPassword) => {
   return user;
 };
 
-// Change password while logged in
+
 const changePassword = async (userId, oldPassword, newPassword) => {
-  console.log("Looking for user with id: ", userId);
-  const user = await User.findOne({where: {user_uuid: userId}});
-  console.log("User fetched", user);
-  if (!user) throw new Error("User not found");
+    console.log('Looking for user with ID:', userId)
+    const user = await User.findOne({where: {user_uuid: userId}});
+    console.log('User fetched:', user)
+  if (!user) throw new Error('User not found');
 
+  // Check old password
   const isMatch = await bcrypt.compare(oldPassword, user.password);
-  if (!isMatch) throw new Error("Old password is incorrect");
+  if (!isMatch) throw new Error('Old password is incorrect');
 
+  // Hash and save new password
   const hashedNew = await bcrypt.hash(newPassword, 10);
   user.password = hashedNew;
   await user.save();
-  console.log(await user.findAll({where : {}}))
 
-  return { message: "Password changed successfully" };
+  console.log(await User.findAll({ where: { id: '458916b5-82a1-444c-b077-70d6f85a51b4' } }));
+
+  return { message: 'Password changed successfully' };
 };
 
 
+//Note getuserprofile is a protected route and that brings us to caching $ middleware
+async function getUserProfile(userUUID){
+    const user = await User.findOne({where: {user_uuid: userUUID}})
+    if(!user) throw new Error("User not found");
+    delete user.password//before sending user profile to frontend, ensure you delete thier password
+    return user;
+}
+
 export {
-    registerUser,
-    login,
-    verifyUser,
+    createUser, 
+    loginUser,
+    getUserProfile,
     logoutUser,
-    resendOtpService,
+    refreshUserToken,
     forgotPassword,
     resetPassword,
     changePassword
-}; 
+};

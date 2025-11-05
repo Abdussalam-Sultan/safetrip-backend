@@ -1,4 +1,3 @@
-import { where } from "sequelize";
 import User from "../models/User.js";
 import Utils from "../utils/authHandler.js";
 import bcrypt from "bcrypt"
@@ -49,7 +48,6 @@ return {
 }
 };
 
-<<<<<<< HEAD
 const verifyUser = async (email, otp) => {
   const user = await User.findOne({ where: { email } });
   if (!user || !user.otp || user.otp !== otp) return null;
@@ -59,29 +57,7 @@ const verifyUser = async (email, otp) => {
   user.otptime = null;
 
   await user.save();
-=======
-const logoutUser = async (req, res) => {
-  try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none"
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Logged out successfully"
-    });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Server error during logout",
-      error: err.message
-    });
-  }
 };
-
->>>>>>> origin/Michael
 
 const forgotPassword = async (req, res, next) => {
   try {
@@ -113,7 +89,6 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
-<<<<<<< HEAD
 const resendOtpService = async (id, otp, otpTime) => {
   const user = await User.findByPk( id );
   if (!user) return null;
@@ -146,41 +121,6 @@ const logoutUser = async (req, res) => {
     });
   }
 };
-
-
-const forgotPassword = async (req, res, next) => {
-  try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ success: false, message: "Email is required" });
-    }
-
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
-    const otptime = new Date(Date.now() + 10 * 60 * 1000); // valid for 10 minutes
-
-    user.otp = otp;
-    user.otpTime = otptime;
-    await user.save();
-
-    // Here you would send OTP via email/SMS
-    // sendOtpEmail(user.email, otp);
-
-    res.status(200).json({ success: true, message: "OTP sent successfully" });
-  } catch (err) {
-    next(err);
-  }
-};
-
-=======
->>>>>>> origin/Michael
-
 
 // Reset password using OTP
 const resetPassword = async (email, otp, newPassword) => {

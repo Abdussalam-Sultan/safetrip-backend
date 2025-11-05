@@ -5,25 +5,46 @@ import bcrypt from "bcryptjs";
 
 //for this services we need to check if users exists
 async function createUser (userData) {
-    const checkEmailExists = await User.findOne({where:
-         { email:userData.email }
-        });
-        if(checkEmailExists) {
-            throw new Error("Email already exist")
-        }
+  const existingUser = await User.findOne({$or: [{ email: userData.email }, { username: userData.username }, { phoneNumber: userData.phoneNumber }],});
         
+  if (existingUser) {
+    throw new Error("User already exists. Please check your details or try a different account.")
+  };
 
-    const checkUsernameExists = await User.findOne({where:
-         { username:userData.username }
-        });
-        if(checkUsernameExists) {
-            throw new Error("Username already exist")
-        }
-
-    const newUser = await User.create(userData);
+  const newUser = await User.create(userData);
     
-    return newUser;
+  return newUser;
 };
+
+
+// Verify user OTP
+async function verifyUser(email, otp) {
+  const user = await User.findOne({ where: { email } });
+  if (!user || !user.otp || user.otp !== otp || !user.otpTime || user.otpTime < new Date()) return null;
+  
+  user.verified = true;
+  user.otp = null;
+  user.otptime = null;
+
+  await user.save();
+
+  return user;
+};
+
+
+// Resend otp - for resend cases
+async function resendOtpService(id, otp, otpTime) {
+  const user = await User.findByPk( id );
+  if (!user) return null;
+
+  user.otp = otp;
+  user.otpTime = otpTime;
+
+  await user.save();
+
+  return user;
+};
+
 
 async function loginUser(loginCrendentials) {
     const user = await User.findOne({where:
@@ -52,7 +73,7 @@ async function loginUser(loginCrendentials) {
 };
 
 
-const logoutUser = async (req, res) => {
+async function logoutUser(req, res) {
   try {
     res.clearCookie("token", {
       httpOnly: true,
@@ -90,7 +111,7 @@ async function refreshUserToken(refreshToken){
 
 
 
-const forgotPassword = async (req, res, next) => {
+async function forgotPassword(req, res, next) {
   try {
     const { email } = req.body;
 
@@ -121,7 +142,7 @@ const forgotPassword = async (req, res, next) => {
 };
 
 // Reset password using OTP
-const resetPassword = async (email, otp, newPassword) => {
+async function resetPassword(email, otp, newPassword) {
   const user = await User.findOne({ where: { email } });
 
   if (!user || !user.otp || user.otp !== otp || !user.otpTime || user.otpTime < new Date()) throw new Error("Invalid OTP");
@@ -137,7 +158,7 @@ const resetPassword = async (email, otp, newPassword) => {
 };
 
 
-const changePassword = async (userId, oldPassword, newPassword) => {
+async function changePassword (userId, oldPassword, newPassword) {
     console.log('Looking for user with ID:', userId)
     const user = await User.findOne({where: {user_uuid: userId}});
     console.log('User fetched:', user)
@@ -168,6 +189,8 @@ async function getUserProfile(userUUID){
 
 export {
     createUser, 
+    verifyUser,
+    resendOtpService,
     loginUser,
     getUserProfile,
     logoutUser,

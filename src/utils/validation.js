@@ -1,22 +1,23 @@
 import { body } from "express-validator";
+import AppError from "./AppError.js";
 
 const registrationValidator = [
     body("username").notEmpty().withMessage("Username is required")
-    .isLength({min:3}).withMessage("Username must be atleast three characters long"),
+    .isLength({min:3}).withMessage("Username must be at least three characters long"),
 
     body("email").notEmpty().withMessage("Email is required")
     .isEmail().withMessage("invalid email format"),
     //.bail(),
     
     body("password").notEmpty().withMessage("Password is required")
-    .isLength({min:6}).withMessage("Password must be atleast 6 characters"),
+    .isLength({min:6}).withMessage("Password must be at least 6 characters"),
 
     //Confirm password must match password
     body("confirmPassword").notEmpty()
     .withMessage("Confirm password is required")
     .custom((value, {req})=>{
         if (req.body.password && value !== req.body.password) {
-            throw new error ("Password did not match");
+            throw new AppError ("Password did not match", 400);
         }
         return true;
     }),

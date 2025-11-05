@@ -6,9 +6,9 @@ import  {
     logoutUser
 } from "../services/userServices.js";
 import User from "../models/User.js";
-import config from "../config/index.js";
 import { getOtp, getOtpExpiryTime } from "../utils/otpGen.js";
 import { validationResult } from "express-validator";
+import APP_CONFIG from "../config/APP_CONFIG.js";
 
 
 
@@ -143,7 +143,7 @@ async function verifyEmail (req, res) {
 async function resendOtp(req, res) {
   const id = req.user.id;
   const otp = getOtp();
-  const otpTimeMins = config.OTP_EXPIRY_TIME_MINS;
+  const otpTimeMins = APP_CONFIG.OTP_EXPIRY_TIME_MINS;
   const otpTime = getOtpExpiryTime(otpTimeMins);
 
   const user = await resendOtpService(id, otp, otpTime);

@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
-import logger from "../utils/loggers.js"
-import config from '../config/index.js';
-
+import logger from "../config/logger.js"
+import APP_CONFIG from '../config/APP_CONFIG.js';
 
 
 const authMiddleware = async (req, res, next) => {
@@ -14,7 +13,7 @@ const authMiddleware = async (req, res, next) => {
   
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, APP_CONFIG.JWT_SECRET);
         
     const userId = decoded.userId || decoded.id
     
@@ -39,7 +38,7 @@ function verifyAuth(req, res, next) {
   }
 
   try {
-    const decoded = jwt.verify(token, config.JWT_SECRET);
+    const decoded = jwt.verify(token, APP_CONFIG.JWT_SECRET);
     req.user = { id: decoded.id }; // attach user info
     next();
   } catch (error) {
@@ -58,7 +57,7 @@ const verifyAccountMiddleware = (req, res, next) => {
             return res.status(401).json({ success: false, message: "Access denied. No token provided. Please Sign Up / Log in."});
         };
 
-        const decoded = jwt.verify(token, config.JWT_OTP_SECRET);
+        const decoded = jwt.verify(token, APP_CONFIG.OTP_SECRET);
         req.user = decoded;
 
         next();

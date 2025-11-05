@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken'
-import config from '../config/index.js'
+import APP_CONFIG from '../config/APP_CONFIG.js'
 
 //we create the actual signin here
 
 async function generatetoken(user){
     try {
         const payload = {id: user.user_uuid, username: user.username, role: user.role}
-    return jwt.sign(payload, config.JWT_SECRET, {
-        expiresIn: config.JWT_REFRESH_EXPIRES_IN,
+    return jwt.sign(payload, APP_CONFIG.JWT_SECRET, {
+        expiresIn: APP_CONFIG.JWT_REFRESH_EXPIRES_IN,
     })
     } catch (error) {
         throw new Error("Error generating Token")
@@ -18,7 +18,7 @@ async function generatetoken(user){
 //after generating you need to verify
 async function verifytoken(token){
     try {
-        return jwt.verify(token, config.JWT_SECRET);
+        return jwt.verify(token, APP_CONFIG.JWT_SECRET);
     } catch (error){
         throw new Error("Invalid Token")
     }
@@ -29,8 +29,8 @@ async function verifytoken(token){
 async function generateRefreshToken(user, token){
     try {
         const payload = {id: user.user_uuid, username: user.username, role: user.role, tokenid: token}
-    return jwt.sign(payload, config.JWT_SECRET, {
-        expiresIn: config.JWT_REFRESH_EXPIRES_IN,
+    return jwt.sign(payload, APP_CONFIG.JWT_SECRET, {
+        expiresIn: APP_CONFIG.JWT_REFRESH_EXPIRES_IN,
     })
     } catch (error) {
         throw new Error("Error generating Refresh Token")
@@ -41,7 +41,7 @@ async function generateRefreshToken(user, token){
 //after generating you need to verify
 async function verifyRefreshToken(token){
     try {
-        return jwt.verify(token, config.JWT_SECRET);
+        return jwt.verify(token, APP_CONFIG.JWT_SECRET);
     } catch (error){
         throw new Error("Invalid Refresh Token")
     }

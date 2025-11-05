@@ -1,6 +1,5 @@
-import SOS from '../models/SOS.js';
+import SOS from '../models/SOSAlert.js';
 import logger from '../config/logger.js';
-import AppError from '../utils/AppError.js';
 
 export const createSOS = async (req, res) => {
   try {
@@ -24,7 +23,7 @@ export const createSOS = async (req, res) => {
       status: 'active'
     });
 
-    logger.info(SOS created for user ${userId}: ${sos.id});
+    logger.info(`SOS created for user ${userId}: ${sos.id}`);
 
     res.status(201).json({
       success: true,
@@ -32,7 +31,7 @@ export const createSOS = async (req, res) => {
       data: sos,
     });
   } catch (error) {
-    logger.error(Error creating SOS: ${error.message});
+    logger.error(`Error creating SOS: ${error.message}`);
     res.status(500).json({ 
       success: false, 
       message: 'Failed to create SOS alert',
@@ -63,7 +62,7 @@ export const getUserSOSEvents = async (req, res) => {
       data: sosEvents,
     });
   } catch (error) {
-    logger.error(Error fetching SOS events: ${error.message});
+    logger.error(`Error fetching SOS events: ${error.message}`);
     res.status(500).json({ 
       success: false, 
       message: 'Failed to retrieve SOS events',

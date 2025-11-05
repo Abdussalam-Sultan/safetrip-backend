@@ -1,5 +1,5 @@
 import express from 'express';
-import { createSOS, getUserSOSEvents, updateSOSStatus } from '../controllers/sosController.js';
+import { createSOS, getUserSOSEvents } from '../controllers/sosController.js';
 
 const router = express.Router();
 

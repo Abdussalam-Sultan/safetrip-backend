@@ -1,4 +1,4 @@
-import logger from "../utils/loggers.js";
+import logger from "../config/logger.js";
 
 //express allows you to take four arguments while handling error.
 export default function errorHandler(err, req, res, next){

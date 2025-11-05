@@ -12,6 +12,7 @@ import { authorizeAdmin } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
+router.use(authMiddleware, authorizeAdmin);
 router.get("/overview", getOverview);
 router.get("/users", getAllUsers);
 router.delete("/users/:id", deleteUser);

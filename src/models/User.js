@@ -1,4 +1,4 @@
-import sequelize from "../config/sequelize";
+import sequelize from "../config/sequelize.js";
 import { DataTypes, UUIDV4 } from "sequelize";
 import bcrypt from "bcrypt";
 

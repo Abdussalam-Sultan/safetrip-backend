@@ -4,10 +4,8 @@ import logger from './config/logger.js';
 import sequelize from './config/sequelize.js';
 import apiLimiter from "./middleware/rateLimiter.js";
 import cors from 'cors';
-import emailService from './services/emailService.js';
 import routes from './routes.js';
 import dotenv from 'dotenv';
-import User from './models/User.js';
 import cookieParser from 'cookie-parser';
 
 
@@ -32,7 +30,7 @@ sequelize.sync()
         logger.info('Database synchronized successfully');
     })
     .catch((error) => {
-        logger.error('Error synchronizing database:', error);
+        console.error('Error synchronizing database:', error);
     });
 
 app.listen(port, () => {

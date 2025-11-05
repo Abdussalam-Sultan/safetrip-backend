@@ -84,7 +84,7 @@ GEOAPIFY_API_KEY=your_geoapify_key
 
 npm run dev
 
-The backend will start on http://localhost:3000
+The backend will start on http://localhost:5000
 
 ### API Testing (Postman)
 

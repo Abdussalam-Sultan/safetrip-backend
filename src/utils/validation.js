@@ -36,7 +36,7 @@ const loginValidator = [
 ];
 
 const changePasswordValidator = [
-    body("oldPassword").notEmpty
+    body("oldPassword").notEmpty()
     .withMessage('old password is require'),
     body("newpassword").notEmpty()
     .withMessage("New password is required")

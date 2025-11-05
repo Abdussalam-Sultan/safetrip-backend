@@ -2,7 +2,8 @@ import Contact from "../models/Contact.js";
 
 export const addContact = async (req, res) => {
   try {
-    const { userId, name, phone, email, relationship } = req.body;
+    const userId = req.user?.id;
+    const {name, phone, email, relationship } = req.body;
 
     if (!userId || !name || !phone) {
       return res.status(400).json({
@@ -12,7 +13,7 @@ export const addContact = async (req, res) => {
     }
 
     const contact = await Contact.create({
-      userId,
+      user_UUID: userId,
       name,
       phone,
       email,
@@ -35,7 +36,7 @@ export const getUserContacts = async (req, res) => {
     const { userId } = req.user?.id;
 
     const contacts = await Contact.findAll({
-      where: { userId },
+      where: { user_UUID: userId, },
       order: [["createdAt", "DESC"]]
     });
 

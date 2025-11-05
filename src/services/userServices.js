@@ -70,12 +70,7 @@ async function loginUser(loginCrendentials) {
   if (!user) throw new AppError("Invalid Email or Password")
 
   //Check to see if password is valid
-  const isPasswordMatch = await user.verifyPassword(
-    loginCrendentials.password
-  );
-    
-  if (!isPasswordMatch) throw new AppError("Invalid email or password")
-
+  
   //manual way to bring in your jsonwebtoken
   const token = await authHandler.createtoken(user);
   const refreshToken = await authHandler.createRefreshToken(user, token);

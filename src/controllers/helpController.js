@@ -35,7 +35,8 @@ export const nearbyHelpFromTravelDestination = async (req, res) => {
         const nearbyHelp = await helpServices.nearbyHelpService(lat, lon, place_id);
         if (!nearbyHelp) return res.status(500).json({ success: false, message: "Service is not availble a the moment!"});
 
-        res.status(200).json({ message: `Nearby help services for ${address} gotten successfully`})
+        res.status(200).json({ message: `Nearby help services for ${address} gotten successfully`, data: nearbyHelp});
+
         
     } catch (error) {
         logger.error(`Error: ${error.message}`);

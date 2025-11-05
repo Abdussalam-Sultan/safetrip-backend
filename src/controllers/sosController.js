@@ -1,12 +1,12 @@
 import SOS from '../models/SOSAlert.js';
 import logger from '../config/logger.js';
+import helpService from '../services/helpServices.js'
 
 export const createSOS = async (req, res) => {
   try {
     const { location, latitude, longitude, description, severityLevel } = req.body;
     const userId = req.user?.id;
-
-    if (!userId || !location) {
+    if (!userId) {
       return res.status(400).json({ 
         success: false, 
         message: "Missing required fields" 
@@ -14,8 +14,8 @@ export const createSOS = async (req, res) => {
     }
 
     const sos = await SOS.create({
-      userId,
-      location,
+      user_UUID: userId,
+      location: location || await helpService.coordToLocation(latitude, longitude) ,
       latitude: latitude || null,
       longitude: longitude || null,
       description: description || 'Emergency SOS triggered',
@@ -52,7 +52,7 @@ export const getUserSOSEvents = async (req, res) => {
     }
 
     const sosEvents = await SOS.findAll({ 
-      where: { userId },
+      where: { user_UUID: userId },
       order: [['createdAt', 'DESC']],
     });
 

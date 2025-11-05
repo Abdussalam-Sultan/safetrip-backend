@@ -64,11 +64,9 @@ const nearbyHelpService = async (lat, lon, place_id=null) => {
 };
 
 
-const coordToLocation = async (req, res) => {
-  const { lat, lon } = req.body;
-
+async function coordToLocation(lat, lon) {
   if (!lat || !lon) {
-    return res.status(400).json({ error: "Latitude and longitude are required" });
+    throw new Error("Latitude and longitude are required");
   }
 
   try {
@@ -79,17 +77,14 @@ const coordToLocation = async (req, res) => {
     const result = response.data.features[0];
 
     if (!result) {
-      return res.status(404).json({ error: "Location not found" });
+      throw new Error("Location not found");
     }
-
-    res.json({
-      success: true,
-      location: result.properties.formatted,
-    });
+    return result.properties.formatted;
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch location", details: error.message });
+    throw new Error(error.message || "Failed to fetch location");
   }
-};
+}
+
 
 export default { getCoordinatesService, nearbyHelpService, coordToLocation };
 

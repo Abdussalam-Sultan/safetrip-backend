@@ -21,17 +21,17 @@ const SOSAlert = sequelize.define("SOSAlert", {
     type: DataTypes.STRING,
     defaultValue: "SOS Emergency",
   },
-  lat: {
+  latitude: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
-  long: {
+  longitude: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
   location: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 }, {
   timestamps: true,

@@ -1,9 +1,11 @@
 import jwt from 'jsonwebtoken';
 import logger from "../config/logger.js"
 import APP_CONFIG from '../config/APP_CONFIG.js';
+import authHandler from '../utils/authHandler.js';
 
 
 const authMiddleware = async (req, res, next) => {
+  
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ success: false, message: 'No token provided' });
@@ -11,11 +13,10 @@ const authMiddleware = async (req, res, next) => {
 
   const token = authHeader.split(' ')[1];
   
-
   try {
-    const decoded = jwt.verify(token, APP_CONFIG.JWT_SECRET);
+    const decoded = await authHandler.verifytoken(token);
         
-    const userId = decoded.userId || decoded.id
+    const userId = decoded.id || decoded.userId
     
      if (!userId) {
       return res.status(401).json({ success: false, message: 'User not authenticated' });
@@ -24,57 +25,35 @@ const authMiddleware = async (req, res, next) => {
         
     next();
   } catch (err) {
-    console.error('JWT verification failed:', err.message);
+    logger.error('JWT verification failed:', err.message);
     res.status(401).json({ success: false, message: 'Invalid token' });
   }
 };
 
-
-function verifyAuth(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1]; // Bearer <token>
-
-  if (!token) {
-    return res.status(401).json({ success: false, message: "No token provided" });
+const authMiddlewareOTP = async (req, res, next) => {
+  
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, message: 'No token provided' });
   }
 
+  const token = authHeader.split(' ')[1];
+  
   try {
-    const decoded = jwt.verify(token, APP_CONFIG.JWT_SECRET);
-    req.user = { id: decoded.id }; // attach user info
-    next();
-  } catch (error) {
-    return res.status(401).json({ success: false, message: "Invalid token" });
-  }
-}
-
-
-const verifyAccountMiddleware = (req, res, next) => {
-    try {
-
-        const token = req.cookies["token"];
-
-        if (!token) {
-            logger.warn("Access denied: No Auth token provided. Please Sign Up.");
-            return res.status(401).json({ success: false, message: "Access denied. No token provided. Please Sign Up / Log in."});
-        };
-
-        const decoded = jwt.verify(token, APP_CONFIG.OTP_SECRET);
-        req.user = decoded;
-
-        next();
-    } catch (error) {
-        logger.error(`JWT verification failed: ${error.message}`);
-
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ success: false, message: "Token expired." });
-        };
-
-        if (error.name === "JsonWebTokenError") {
-            return res.status(403).json({ success: false, message: "Invalid token." });
-        };
-
-        return res.status(500).json({ success: false, message: "Authentication"});
-    };
+    const decoded = await authHandler.verifyOTPtoken(token);
+        
+    const userId = decoded.id || decoded.userId
     
+     if (!userId) {
+      return res.status(401).json({ success: false, message: 'User not authenticated' });
+    };
+    req.user = { id: userId, username: decoded.username, role:decoded.role };
+        
+    next();
+  } catch (err) {
+    logger.error('JWT verification failed:', err.message);
+    res.status(401).json({ success: false, message: 'Invalid token' });
+  }
 };
 
-export {authMiddleware, verifyAccountMiddleware, verifyAuth}
+export {authMiddleware, authMiddlewareOTP}

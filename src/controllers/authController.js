@@ -1,16 +1,19 @@
 import AppError from "../utils/AppError.js"
 import  {
-    changePassword,
-    createUser, 
-    loginUser, 
-    logoutUser
+  createUser, 
+  verifyUser,
+  resendOtpService,
+  forgotPasswordService, 
+  resetPasswordService,
+  loginUser, 
+  changePassword,
 } from "../services/userServices.js";
-import User from "../models/User.js";
 import { getOtp, getOtpExpiryTime } from "../utils/otpGen.js";
 import { validationResult } from "express-validator";
 import APP_CONFIG from "../config/APP_CONFIG.js";
 import logger from "../config/logger.js";
 import emailService from "../services/emailService.js";
+import authHandler from "../utils/authHandler.js";
 
 
 
@@ -24,9 +27,11 @@ async function registerUser (req, res){
 
       const user = await createUser({username, email, password, gender, phoneNumber, role, otp, otpTime});
 
-      
       await emailService.sendOtp(user.email, "Verify your account", user.username, otp, otpTimeMins);
-      res.status(201).json({Success: true, message:"Verification email sent to your email."})
+      
+      const token = await authHandler.createOTPtoken(user);
+
+      res.status(201).json({Success: true, message:"Verification email sent to your email.", token})
       
     } catch (error) {
       logger.error("Registration Error:", error);
@@ -36,29 +41,28 @@ async function registerUser (req, res){
 
 // Verify OTP
 async function verifyEmail (req, res) {
-   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array()[0].msg });
-
-  const { email, otp } = req.body;
-  const user = await verifyUser(email, otp);
-  if (!user) return res.status(400).send("Invalid OTP");
-
-  // Send welcome email
   try {
+    const { email, otp } = req.body;
+    const user = await verifyUser(email, otp);
+    if (!user) return res.status(400).json({ error: "Invalid OTP" });
+    
+    // Send welcome email
     await emailService.sendWelcomeEmail(user.email, 'Welcome to Safe Trip!', user.name);
+  
   } catch (error) {
     logger.error(error.message);
     throw new AppError(error.nessage, 500);
   };
 
   res.clearCookie("token");
-  res.status(200).send("Account verification was successful")
+  res.status(200).json({ message: "Account verification was successful" });
 };
 
 
 // Resend otp
 async function resendOtp(req, res) {
   const id = req.user.id;
+  
   const otp = getOtp();
   const otpTimeMins = APP_CONFIG.OTP_EXPIRY_TIME_MINS;
   const otpTime = getOtpExpiryTime(otpTimeMins);
@@ -89,24 +93,46 @@ async function login (req, res){
 };
 
 
-const changePasswordController = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      message: 'Validation error',
-      data: errors.array().map(e => e.msg)
-    });
-  }
 
+async function forgotPassword(req, res, next) {
   try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({
-        success: false,
-        message: 'User not authenticated'
-      });
-    }
+    const { email } = req.body;
 
+    // Generate OTP
+    const otp = getOtp(); 
+    const otpTimeMins = APP_CONFIG.OTP_EXPIRY_TIME_MINS;
+    const otptime = getOtpExpiryTime(otpTimeMins);
+    
+    const user = await forgotPasswordService(email, otp, otptime);
+    if (!user) {
+      return res.send("If this email is registered, a password reset link will be sent.")   
+    };
+
+    await emailService.sendPasswordRecoveryEmail(user.email, "Password Reset Request", user.username, otp, otpTimeMins)
+
+    res.status(200).json({ success: true, message: "Check your email. If this email is registered, a password reset email will be sent." });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+// Reset password using OTP
+async function resetPassword(req, res) {
+  try {
+    const { email, otp, newPassword } = req.body;
+    await resetPasswordService(email, otp, newPassword);
+    
+    res.status(201).json({message: "Password reset was successful."});
+
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+
+async function changePasswordController(req, res) {
+  try {
     const { oldPassword, newPassword } = req.body;
     const userId = req.user.id;
 
@@ -130,56 +156,33 @@ const changePasswordController = async (req, res) => {
   }
 };
 
-async function forgotPassword(email, otp, otptime){
-    const user = await User.findOne({ where: { email } });
-  if (!user) throw new Error("User not found");
-  
-  user.otp = otp;
-  user.otpTime = otptime;
-  
-  await user.save();
-
-  return user;
-};
 
 // Logout
-const logout = async (req, res) => {
-  logoutUser(res);
-  res.status(200).json({message: "Log out successful."});
+// Clear tokens from frontend (for advanced systems, token blacklisting can be used)
+
+async function logoutController(req, res) {
+  try {
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully. Please clear your token on the client.",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error during logout",
+      error: err.message,
+    });
+  }
 };
-
-// Reset password using OTP
-async function resetPassword(email, otp, newPassword) {
-  const user = await User.findOne({ where: { email } });
-
-  if (!user || !user.otp || user.otp !== otp || !user.otpTime || user.otpTime < new Date()) throw new Error("Invalid OTP");
-  
-  const hashed = await bcrypt.hash(newPassword, 10);
-  
-  user.password = hashed;
-  user.otp = null;
-  user.otpTime = null;
-
-  await user.save();
-  return user;
-};
-
-
-function getEmailOTP(req, res) {
-    res.send("Email OTP sent")
-};
-
-
 
 
 export {
     registerUser,
-    changePasswordController,
-    getEmailOTP,
     verifyEmail,
-    login,
+    resendOtp,
     forgotPassword,
-    logout,
     resetPassword,
-    resendOtp
+    login,
+    changePasswordController,
+    logoutController,
 };

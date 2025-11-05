@@ -39,27 +39,29 @@ const loginValidator = [
     .bail(),
     body("password").notEmpty().withMessage("Invalid Email or Password")
     .isLength({min:6})
-    .withMessage("Password must be atleast 6 characters")
+    .withMessage("Password must be at least 6 characters")
 ];
 
 
 const changePasswordValidator = [
   body('oldPassword')
     .notEmpty()
-    .withMessage('Old password is required'),
+    .withMessage('Old password is required')
+    .isLength({ min:6 })
+    .withMessage("Old password must be at least 6 characters"),
 
   body('newPassword')
     .notEmpty()
     .withMessage('New password is required')
-    .isLength({ min: 8 })
-    .withMessage('New password must be at least 8 characters'),
+    .isLength({ min: 6 })
+    .withMessage('New password must be at least 6 characters'),
 
   body('confirmPassword')
     .notEmpty()
     .withMessage('Confirm password is required')
     .custom((value, { req }) => {
       if (value !== req.body.newPassword) {
-        throw new Error('Confirm password does not match new password');
+        throw new AppError('Confirm password does not match new password', 400);
       }
       return true;
     })
@@ -81,7 +83,7 @@ const resetPasswordValidator = [
     .isLength({ min: 6, max: 6 }).withMessage("OTP must be 6 characters"),
     body("newPassword")
     .notEmpty().withMessage("New password is required")
-    .isLength({ min: 8 }).withMessage("New password must be at least 8 characters"),
+    .isLength({ min: 6 }).withMessage("New password must be at least 6 characters"),
 ];
 
 const verifyEmailValidation = [

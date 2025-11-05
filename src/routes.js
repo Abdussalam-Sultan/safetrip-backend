@@ -1,6 +1,6 @@
 import express from 'express';
 
-import authRoutes from './routes/auth.js';
+import authRoutes from './routes/authRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import sosRoutes from './routes/sosRoutes.js';
 import tipRoutes from './routes/tipRoutes.js';

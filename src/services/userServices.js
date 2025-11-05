@@ -1,14 +1,24 @@
+import { Op } from "sequelize";
 import User from "../models/User.js";
-import Utils from "../utils/Auth.js"
+import AppError from "../utils/AppError.js";
+import authHandler from "../utils/authHandler.js"
 import bcrypt from "bcryptjs";
 
 
 //for this services we need to check if users exists
 async function createUser (userData) {
-  const existingUser = await User.findOne({$or: [{ email: userData.email }, { username: userData.username }, { phoneNumber: userData.phoneNumber }],});
-        
+  const existingUser = await User.findOne({
+    where: {
+      [Op.or]: [
+        { email: userData.email.toLowerCase() },
+        { username: userData.username.toLowerCase() },
+        { phoneNumber: userData.phoneNumber },
+      ],
+    },
+  });
+
   if (existingUser) {
-    throw new Error("User already exists. Please check your details or try a different account.")
+    throw new AppError("A user with this email, username or phone number already exists", 400);
   };
 
   const newUser = await User.create(userData);
@@ -20,7 +30,14 @@ async function createUser (userData) {
 // Verify user OTP
 async function verifyUser(email, otp) {
   const user = await User.findOne({ where: { email } });
-  if (!user || !user.otp || user.otp !== otp || !user.otpTime || user.otpTime < new Date()) return null;
+  if (!user) throw new AppError("User account not found", 400);
+  
+  if (!user.otp || !user.otpTime) throw new AppError("OTP already used", 400);
+  
+  if (user.otp !== otp) throw new AppError("Invalid OTP", 400);
+  
+  if (user.otpTime < new Date()) throw new AppError("Expired OTP", 400);
+
   
   user.verified = true;
   user.otp = null;
@@ -47,61 +64,40 @@ async function resendOtpService(id, otp, otpTime) {
 
 
 async function loginUser(loginCrendentials) {
-    const user = await User.findOne({where:
-         { email:loginCrendentials.email }
-        });
-        if (!user) throw new Error("Invalid Email or Password")
+  const user = await User.findOne({where:
+   { email:loginCrendentials.email }
+  });
+  if (!user) throw new AppError("Invalid Email or Password")
 
-    //Check to see if password is valid
-    const isPasswordMatch = await user.verifyPassword(
-        loginCrendentials.password
-    );
+  //Check to see if password is valid
+  const isPasswordMatch = await user.verifyPassword(
+    loginCrendentials.password
+  );
     
-    if (!isPasswordMatch) throw new Error("Invalid email or password")
+  if (!isPasswordMatch) throw new AppError("Invalid email or password")
 
   //manual way to bring in your jsonwebtoken
-  const token = await Utils.generatetoken(user);
-  const refreshToken = await Utils.generateRefreshToken(user, token);
+  const token = await authHandler.createtoken(user);
+  const refreshToken = await authHandler.createRefreshToken(user, token);
   return {
-      userUUID: user.user_uuid, 
+      userUUID: user.user_UUID, 
       email: user.email, username:
       user.username, phone: user.phoneNumber || null,
       profilePicture: user.profilePicture || null, gender: user.gender,
-      role: user.role, token,
+      role: user.role, 
+      token,
       refreshToken,
       }
 };
 
 
-async function logoutUser(req, res) {
-  try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "none"
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Logged out successfully"
-    });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Server error during logout",
-      error: err.message
-    });
-  }
-};
-
-
 async function refreshUserToken(refreshToken){
-    const decoded = await Utils.verifyRefreshToken(refreshToken)
-    const user = await User.findOne({where: {user_uuid: decoded.id}});
+    const decoded = await authHandler.verifyRefreshToken(refreshToken)
+    const user = await User.findOne({where: {user_UUID: decoded.id}});
     if(!user) throw new Error("User not found")
         
-    const newToken = await Utils.generatetoken(user);
-    const newRefreshToken = await Utils.generateRefreshToken(user, newToken)
+    const newToken = await authHandler.generatetoken(user);
+    const newRefreshToken = await authHandler.generateRefreshToken(user, newToken)
 
     return{
         token: newToken,
@@ -110,43 +106,31 @@ async function refreshUserToken(refreshToken){
 }
 
 
-
-async function forgotPassword(req, res, next) {
-  try {
-    const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ success: false, message: "Email is required" });
-    }
-
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
-    const otptime = new Date(Date.now() + 10 * 60 * 1000); // valid for 10 minutes
-
-    user.otp = otp;
-    user.otpTime = otptime;
-    await user.save();
-
-    // Here you would send OTP via email/SMS
-    // sendOtpEmail(user.email, otp);
-
-    res.status(200).json({ success: true, message: "OTP sent successfully" });
-  } catch (err) {
-    next(err);
-  }
+async function forgotPasswordService(email, otp, otptime){
+  const user = await User.findOne({ where: { email } });
+  if (!user) throw new AppError("User not found", 400);
+  
+  user.otp = otp;
+  user.otpTime = otptime;
+  
+  await user.save();
+  
+  return user;
 };
 
+
 // Reset password using OTP
-async function resetPassword(email, otp, newPassword) {
+async function resetPasswordService(email, otp, newPassword) {
   const user = await User.findOne({ where: { email } });
 
-  if (!user || !user.otp || user.otp !== otp || !user.otpTime || user.otpTime < new Date()) throw new Error("Invalid OTP");
+  if (!user) throw new AppError("User account not found", 400);
   
+  if (!user.otp || !user.otpTime) throw new AppError("OTP already used", 400);
+  
+  if (user.otp !== otp) throw new AppError("Invalid OTP", 400);
+  
+  if (user.otpTime < new Date()) throw new AppError("Expired OTP", 400);
+
   const hashed = await bcrypt.hash(newPassword, 10);
   
   user.password = hashed;
@@ -159,21 +143,17 @@ async function resetPassword(email, otp, newPassword) {
 
 
 async function changePassword (userId, oldPassword, newPassword) {
-    console.log('Looking for user with ID:', userId)
-    const user = await User.findOne({where: {user_uuid: userId}});
-    console.log('User fetched:', user)
-  if (!user) throw new Error('User not found');
+  const user = await User.findOne({where: {user_UUID: userId}});
+  if (!user) throw new AppError('User not found', 400);
 
   // Check old password
   const isMatch = await bcrypt.compare(oldPassword, user.password);
-  if (!isMatch) throw new Error('Old password is incorrect');
+  if (!isMatch) throw new AppError('Old password is incorrect', 400);
 
   // Hash and save new password
   const hashedNew = await bcrypt.hash(newPassword, 10);
   user.password = hashedNew;
   await user.save();
-
-  console.log(await User.findAll({ where: { id: '458916b5-82a1-444c-b077-70d6f85a51b4' } }));
 
   return { message: 'Password changed successfully' };
 };
@@ -181,7 +161,7 @@ async function changePassword (userId, oldPassword, newPassword) {
 
 //Note getuserprofile is a protected route and that brings us to caching $ middleware
 async function getUserProfile(userUUID){
-    const user = await User.findOne({where: {user_uuid: userUUID}})
+    const user = await User.findOne({where: {user_UUID: userUUID}})
     if(!user) throw new Error("User not found");
     delete user.password//before sending user profile to frontend, ensure you delete thier password
     return user;
@@ -193,9 +173,8 @@ export {
     resendOtpService,
     loginUser,
     getUserProfile,
-    logoutUser,
     refreshUserToken,
-    forgotPassword,
-    resetPassword,
+    forgotPasswordService,
+    resetPasswordService,
     changePassword
 };

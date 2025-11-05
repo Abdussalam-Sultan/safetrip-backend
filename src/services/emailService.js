@@ -34,12 +34,12 @@ const sendWelcomeEmail = async (recipient, subject='Welcome to Safe Trip App!', 
     };
 };
 
-const sendPasswordRecoveryEmail = async (recipient, subject='Password Reset Request', username, link) => {
+const sendPasswordRecoveryEmail = async (recipient, subject='Password Reset Request', username, otp, otpTimeMins) => {
     try {
         const templatePath = path.join(__dirname, '../..', 'views', 'passwordRecovery.ejs');
         console.log(templatePath);
         
-        const htmlData = await ejs.renderFile(templatePath, {user: username, resetLink: link});
+        const htmlData = await ejs.renderFile(templatePath, {user: username, otp, otpTimeMins});
         await sendEmail(recipient, subject, htmlData);
 
         logger.info(`Password reset link sent to ${username} successfully.`);

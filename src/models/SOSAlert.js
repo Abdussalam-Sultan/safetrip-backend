@@ -7,9 +7,15 @@ const SOSAlert = sequelize.define("SOSAlert", {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
-  userId: {
+  user_UUID: {                           
     type: DataTypes.UUID,
     allowNull: false,
+    references: {
+      model: 'Users',                     
+      key: 'user_UUID',                 
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   },
    message: {
     type: DataTypes.STRING,

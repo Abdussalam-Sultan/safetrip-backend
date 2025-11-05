@@ -3,7 +3,7 @@ import sequelize from "../config/sequelize.js";
 
 const Contact = sequelize.define("Contact", {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  userId: { type: DataTypes.UUID, allowNull: false },
+  user_UUID: { type: DataTypes.UUID, allowNull: false, references: {model: 'Users', key: 'user_UUID',}, onDelete: 'CASCADE', onUpdate: 'CASCADE',},
   name: { type: DataTypes.STRING, allowNull: false },
   phone: { type: DataTypes.STRING, allowNull: false },
   email: { type: DataTypes.STRING, allowNull: true },

@@ -1,17 +1,23 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/sequelize.js'
+import sequelize from '../config/sequelize.js';
 
 const CheckIn = sequelize.define('CheckIn', {
-  id: {
+  checkin_UUID: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
   },
-  userId: {
+  user_UUID: {                           
     type: DataTypes.UUID,
     allowNull: false,
+    references: {
+      model: 'Users',                     
+      key: 'user_UUID',                 
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   },
-   message: {
+  message: {
     type: DataTypes.STRING,
     defaultValue: "I'm safe",
   },

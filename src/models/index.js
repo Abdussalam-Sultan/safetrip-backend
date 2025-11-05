@@ -2,7 +2,6 @@ import User from "./User.js";
 import Contact from "./Contact.js";
 import SOSAlert from "./SOSAlert.js";
 import CheckIn from "./CheckIn.js";
-import SOSAlert from "./SOSAlert.js";
 
 
 User.hasMany(Contact, {

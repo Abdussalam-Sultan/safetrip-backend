@@ -9,6 +9,7 @@ import User from "../models/User.js";
 import { getOtp, getOtpExpiryTime } from "../utils/otpGen.js";
 import { validationResult } from "express-validator";
 import APP_CONFIG from "../config/APP_CONFIG.js";
+import emailService from "../services/emailService.js"
 
 
 

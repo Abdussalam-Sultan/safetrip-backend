@@ -8,6 +8,7 @@ import checkinRoutes from './routes/checkinRoutes.js';
 import timelineRoutes from './routes/timelineRoutes.js';
 import helpRoutes from './routes/helpRoutes.js';
 import { authMiddleware } from './middleware/authMiddleware.js';
+import adminRoutes from './routes/adminRoutes.js'
 
 const router = express.Router();
 
@@ -19,5 +20,6 @@ router.use('/checkins',authMiddleware, checkinRoutes);
 router.use('/timeline', timelineRoutes);
 router.use('/help', helpRoutes);
 router.use("/tips", tipRoutes);
+router.use('/admin', adminRoutes)
 
 export default router;

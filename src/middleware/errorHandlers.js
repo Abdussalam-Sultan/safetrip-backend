@@ -14,7 +14,7 @@ if(statusCode >= 500){
     });
 };
 
-    res.status(statusCode).json ({success: true, 
+    res.status(statusCode).json ({success: false, 
         message: err.message || 
         "Internal Server Error",
         data: err.data || null

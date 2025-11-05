@@ -10,6 +10,7 @@ import { getOtp, getOtpExpiryTime } from "../utils/otpGen.js";
 import { validationResult } from "express-validator";
 import APP_CONFIG from "../config/APP_CONFIG.js";
 import logger from "../config/logger.js";
+import emailService from "../services/emailService.js";
 
 
 
@@ -17,25 +18,65 @@ async function registerUser (req, res){
   try {
       const {username, email, password, phoneNumber, gender, role = "user"} = req.body;
       
-      const existingUser = await User.findOne({
-        $or: [{ email }, { username }, { phoneNumber }],
-      });
+      const otp = getOtp();
+      const otpTimeMins = APP_CONFIG.OTP_EXPIRY_TIME_MINS;
+      const otpTime = getOtpExpiryTime(otpTimeMins);
 
-      if (existingUser) {
-        return res.status(400).json({
-          success: false,
-          message: "User already exists. Please check your details or try a different account.",
-        });
-      }
+      const user = await createUser({username, email, password, gender, phoneNumber, role, otp, otpTime});
 
-      await createUser({username, email, password, gender, phoneNumber, role})
-      res.status(201).json({Success: true, message:"User Registered Successfully."})
+      
+      await emailService.sendOtp(user.email, "Verify your account", user.username, otp, otpTimeMins);
+      res.status(201).json({Success: true, message:"Verification email sent to your email."})
       
     } catch (error) {
       logger.error("Registration Error:", error);
        throw new AppError(error || "Registration Failed")
     }
 };
+
+// Verify OTP
+async function verifyEmail (req, res) {
+   const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array()[0].msg });
+
+  const { email, otp } = req.body;
+  const user = await verifyUser(email, otp);
+  if (!user) return res.status(400).send("Invalid OTP");
+
+  // Send welcome email
+  try {
+    await emailService.sendWelcomeEmail(user.email, 'Welcome to Safe Trip!', user.name);
+  } catch (error) {
+    logger.error(error.message);
+    throw new AppError(error.nessage, 500);
+  };
+
+  res.clearCookie("token");
+  res.status(200).send("Account verification was successful")
+};
+
+
+// Resend otp
+async function resendOtp(req, res) {
+  const id = req.user.id;
+  const otp = getOtp();
+  const otpTimeMins = APP_CONFIG.OTP_EXPIRY_TIME_MINS;
+  const otpTime = getOtpExpiryTime(otpTimeMins);
+
+  const user = await resendOtpService(id, otp, otpTime);
+  if (!user) return res.status(401).send("You are not registered yet! Go to the sign up page!");
+
+  // Send otp email
+  try {
+    await emailService.sendOtp(user.email, "Your OTP Verification Code", user.name, otp, otpTimeMins);
+  } catch (error) {
+    logger.error(error.message);
+    throw new AppError(error.nessage, 500);
+  };
+
+   res.status(201).json({ message: "OTP sent to your email" });
+};
+
 
 async function login (req, res){
     const {email, password} = req.body
@@ -128,51 +169,7 @@ function getEmailOTP(req, res) {
     res.send("Email OTP sent")
 };
 
-// Verify OTP
-async function verifyEmail (req, res) {
-   const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array()[0].msg });
 
-  const { email, otp } = req.body;
-  const user = await verifyUser(email, otp);
-  if (!user) return res.status(400).send("Invalid OTP");
-
-  // Send welcome email
-  try {
-    await emailService.sendWelcomeEmail(user.email, 'Welcome to Safe Travel App!', user.name);
-  } catch (error) {
-    logger.error(error.message);
-    throw new AppError(error.nessage, 500);
-  };
-
-  res.clearCookie("token");
-  // res.render("auth/login", { message: "Verification successful!" });
-  res.status(200).send("Account verification was successful")
-
-    //res.send("Email verified Successfully")
-};
-
-
-// Resend otp
-async function resendOtp(req, res) {
-  const id = req.user.id;
-  const otp = getOtp();
-  const otpTimeMins = APP_CONFIG.OTP_EXPIRY_TIME_MINS;
-  const otpTime = getOtpExpiryTime(otpTimeMins);
-
-  const user = await resendOtpService(id, otp, otpTime);
-  if (!user) return res.status(401).send("You are not registered yet! Go to the sign up page!");
-
-  // Send otp email
-  try {
-    await emailService.sendOtp(user.email, "Your OTP Verification Code", user.name, otp, otpTimeMins);
-  } catch (error) {
-    logger.error(error.message);
-    throw new AppError(error.nessage, 500);
-  };
-
-   res.status(201).json({ message: "OTP sent to your email" });
-};
 
 
 export {

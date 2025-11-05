@@ -11,7 +11,7 @@ const sendOtp = async (recipient, subject='Verify Your Account', username, otp, 
         const templatePath = path.join(__dirname, '../..', 'views', 'verifyOtp.ejs');
         console.log(templatePath);
         
-        const htmlData = await ejs.renderFile(templatePath, {user: username, otp: otp, otpTime: otpTime});
+        const htmlData = await ejs.renderFile(templatePath, {user: username, otp: otp, otpTimeMins: otpTime});
         await sendEmail(recipient, subject, htmlData);
 
         logger.info(`Otp sent to ${username} successfully.`);

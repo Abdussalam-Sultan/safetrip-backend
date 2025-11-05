@@ -12,10 +12,10 @@ const User = sequelize.define ('User', {
   gender: {type: DataTypes.STRING, allowNull:true},
   role: {type: DataTypes.ENUM("user", "admin"), allowNull:false, defaultValue:"user"},
   //for Role Base permission
-  status: {
-    type:DataTypes.ENUM("active", "inactive", "suspended"),
-    allowNull:false, defaultValue: "active"
-}  
+  status: {type:DataTypes.ENUM("active", "inactive", "suspended"),allowNull:false, defaultValue: "active"},
+  otp: {type: DataTypes.STRING, allowNull: true,},
+  otpTime: {type: DataTypes.DATE, allowNull: true,},
+  verified: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false,},  
 }, {timestamps:true,
     hooks: {
         beforeCreate:async (user) => {

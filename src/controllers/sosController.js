@@ -4,7 +4,7 @@ import helpService from '../services/helpServices.js'
 
 export const createSOS = async (req, res) => {
   try {
-    const { location, latitude, longitude, description, severityLevel } = req.body;
+    const { location, latitude, longitude, message, severityLevel } = req.body;
     const userId = req.user?.id;
     if (!userId) {
       return res.status(400).json({ 
@@ -18,7 +18,7 @@ export const createSOS = async (req, res) => {
       location: location || await helpService.coordToLocation(latitude, longitude) ,
       latitude: latitude || null,
       longitude: longitude || null,
-      description: description || 'Emergency SOS triggered',
+      message,
       severityLevel: severityLevel || 'high',
       status: 'active'
     });

@@ -10,6 +10,16 @@ const Tip = sequelize.define("Tip", {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  user_UUID: { 
+    type: DataTypes.UUID, 
+    allowNull: false, 
+    references: {model: 'Users', key: 'user_UUID',}, 
+    onDelete: 'CASCADE', 
+    onUpdate: 'CASCADE',
+  },
+    
+}, {
+  timestamps: true
 });
 
 

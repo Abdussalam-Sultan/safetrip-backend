@@ -14,7 +14,7 @@ const router = express.Router();
 
 
 router.use('/auth', authRoutes);
-router.use('/contacts',authMiddleware, contactRoutes);
+router.use('/contacts', authMiddleware, contactRoutes);
 router.use('/sos',authMiddleware, sosRoutes);
 router.use('/checkins',authMiddleware, checkinRoutes);
 router.use('/timeline',authMiddleware, timelineRoutes);

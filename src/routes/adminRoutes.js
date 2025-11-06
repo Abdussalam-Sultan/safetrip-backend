@@ -6,8 +6,11 @@ import {
   getAllCheckIns,
   getAllContacts,
   getOverview,
+  createTip,
+  getAllTips,
+  updateTip,
+  deleteTip,
 } from "../controllers/adminControllers.js";
-import { authMiddleware } from "../middleware/authMiddleware.js";
 import { authorizeAdmin } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
@@ -19,5 +22,10 @@ router.delete("/users/:id", deleteUser);
 router.get("/sos", getAllSos);
 router.get("/checkins", getAllCheckIns);
 router.get("/contacts", getAllContacts);
+
+router.post("/tips", createTip);
+router.get("/tips", getAllTips);
+router.put("/tips/:id", updateTip);
+router.delete("/tips/:id", deleteTip);
 
 export default router;

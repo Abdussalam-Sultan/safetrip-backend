@@ -2,6 +2,7 @@ import User from "./User.js";
 import Contact from "./Contact.js";
 import SOSAlert from "./SOSAlert.js";
 import CheckIn from "./CheckIn.js";
+import Tip from "./Tip.js";
 
 // User - Contact
 User.hasMany(Contact, {
@@ -36,4 +37,15 @@ CheckIn.belongsTo(User, {
   as: "user",
 });
 
-export { User, Contact, SOSAlert, CheckIn };
+// User (Admin) - Tip
+User.hasMany(Tip, {
+  foreignKey: "user_UUID",
+  as: "tips",
+  onDelete: "CASCADE",
+});
+Tip.belongsTo(User, {
+  foreignKey: "user_UUID",
+  as: "user",
+});
+
+export { User, Contact, SOSAlert, CheckIn, Tip };

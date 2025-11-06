@@ -47,7 +47,7 @@ async function verifyEmail (req, res) {
     if (!user) return res.status(400).json({ error: "Invalid OTP" });
     
     // Send welcome email
-    await emailService.sendWelcomeEmail(user.email, 'Welcome to Safe Trip!', user.name);
+    await emailService.sendWelcomeEmail(user.email, 'Welcome to Safe Trip!', user.username);
   
   } catch (error) {
     logger.error(error.message);

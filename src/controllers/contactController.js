@@ -1,4 +1,5 @@
 import Contact from "../models/Contact.js";
+import AppError from "../utils/AppError.js";
 
 export const addContact = async (req, res) => {
   try {
@@ -33,8 +34,8 @@ export const addContact = async (req, res) => {
 
 export const getUserContacts = async (req, res) => {
   try {
-    const { userId } = req.user?.id;
-
+    const userId = req.user?.id;
+    
     const contacts = await Contact.findAll({
       where: { user_UUID: userId, },
       order: [["createdAt", "DESC"]]
@@ -51,12 +52,19 @@ export const getUserContacts = async (req, res) => {
 export const updateContact = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user?.id;
 
     const contact = await Contact.findByPk(id);
+    
     if (!contact) return res.status(404).json({ message: "Contact not found" });
+    
+    if (contact.user_UUID !== userId) {
+      res.status(403).json({ error: "You are not authorized to delete this contact" });
+    };
+
 
     await contact.update(req.body);
-    res.json(contact);
+    res.json({ success: true, message: `Contact ${id} updated sucessfully`, data: contact });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -66,14 +74,21 @@ export const updateContact = async (req, res) => {
 export const deleteContact = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user?.id;
 
-    const deleted = await Contact.destroy({ where: { id } });
+    const contact = await Contact.findByPk(id);
+    
+    if (!contact) {
+      res.status(400).json({ error: "Contact not found" });
+    };
 
-    if (!deleted) {
-      return res.status(404).json({ success: false, message: "Contact not found" });
+    if (contact.user_UUID !== userId) {
+      res.status(403).json({ error: "You are not authorized to delete this contact" });
     }
 
-    res.json({ success: true, message: "Contact deleted successfully" });
+    const deleted = await contact.destroy();
+
+    res.json({ success: true, message: `Contact ${id} deleted successfully` });
   } catch (error) {
     console.error("Error deleting contact:", error);
     res.status(500).json({ success: false, message: "Internal server error" });

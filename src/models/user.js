@@ -1,21 +1,21 @@
 import sequelize from "../config/sequelize.js";
 import { DataTypes, UUIDV4 } from "sequelize";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 const User = sequelize.define ('User', {
-  user_UUID:{type: DataTypes.UUID, autoIncrement:false, defaultValue: UUIDV4, primaryKey: true},
-  email: {type: DataTypes.STRING, allowNull:false, unique:true},
-  username: {type: DataTypes.STRING, allowNull:false, unique: true},
-  password: {type: DataTypes.STRING, allowNull:false, unique: false},
+  user_uuid:{type: DataTypes.UUID, autoIncrement:false, defaultValue: UUIDV4},
+  email: {type: DataTypes.STRING, allowNull:false, unique:false},
+  username: {type: DataTypes.STRING, allowNull:false, unique: false},
+  password: {type: DataTypes.STRING, allowNull:false, },
   phonenumber: {type: DataTypes.STRING, allowNull:true, unique: true},
   profilePicture: { type: DataTypes.STRING, allowNull:false, defaultValue:"default-avatar.png"},
-  gender: {type: DataTypes.ENUM("male", "female", "others"), allowNull:true},
+  gender: {type: DataTypes.STRING, allowNull:true},
   role: {type: DataTypes.ENUM("user", "admin"), allowNull:false, defaultValue:"user"},
   //for Role Base permission
-  status: {type:DataTypes.ENUM("active", "inactive", "suspended"),allowNull:false, defaultValue: "active"},
-  otp: {type: DataTypes.STRING, allowNull: true,},
-  otpTime: {type: DataTypes.DATE, allowNull: true,},
-  verified: {type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false,},  
+  status: {
+    type:DataTypes.ENUM("active", "inactive", "suspended"),
+    allowNull:false, defaultValue: "active"
+}  
 }, {timestamps:true,
     hooks: {
         beforeCreate:async (user) => {
@@ -39,6 +39,20 @@ const User = sequelize.define ('User', {
             }
         }
     },
+    indexes:[
+        {
+            unique:true,
+            fields:["user_uuid"],
+        },
+        {
+            unique:true,
+            fields:["username"],
+        },
+        {
+            unique:true,
+            fields:["email"]
+        },
+    ],
 }
 
 );

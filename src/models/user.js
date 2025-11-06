@@ -1,6 +1,6 @@
 import sequelize from "../config/sequelize.js";
 import { DataTypes, UUIDV4 } from "sequelize";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 const User = sequelize.define ('User', {
   user_uuid:{type: DataTypes.UUID, autoIncrement:false, defaultValue: UUIDV4},

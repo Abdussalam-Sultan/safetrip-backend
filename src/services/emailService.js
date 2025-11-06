@@ -5,13 +5,14 @@ import logger from "../config/logger.js";
 
 
 const __dirname = import.meta.dirname;
+const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 
 const sendOtp = async (recipient, subject='Verify Your Account', username, otp, otpTime) => {
     try {
         const templatePath = path.join(__dirname, '../..', 'views', 'verifyOtp.ejs');
         console.log(templatePath);
         
-        const htmlData = await ejs.renderFile(templatePath, {user: username, otp: otp, otpTimeMins: otpTime});
+        const htmlData = await ejs.renderFile(templatePath, {user: capitalize(username), otp: otp, otpTimeMins: otpTime});
         await sendEmail(recipient, subject, htmlData);
 
         logger.info(`Otp sent to ${username} successfully.`);
@@ -25,7 +26,7 @@ const sendWelcomeEmail = async (recipient, subject='Welcome to Safe Trip App!', 
         const templatePath = path.join(__dirname, '../..', 'views', 'welcomeMessage.ejs');
         console.log(templatePath);
         
-        const htmlData = await ejs.renderFile(templatePath, {user: username});
+        const htmlData = await ejs.renderFile(templatePath, {user: capitalize(username)});
         await sendEmail(recipient, subject, htmlData);
 
         logger.info(`Welcome email sent to ${username} successfully.`);
@@ -39,7 +40,7 @@ const sendPasswordRecoveryEmail = async (recipient, subject='Password Reset Requ
         const templatePath = path.join(__dirname, '../..', 'views', 'passwordRecovery.ejs');
         console.log(templatePath);
         
-        const htmlData = await ejs.renderFile(templatePath, {user: username, otp, otpTimeMins});
+        const htmlData = await ejs.renderFile(templatePath, {user: capitalize(username), otp, otpTimeMins});
         await sendEmail(recipient, subject, htmlData);
 
         logger.info(`Password reset link sent to ${username} successfully.`);

@@ -8,10 +8,10 @@ export const nearbyHelpFromCurrentLocation = async (req, res) => {
         const { lat, lon } = req.body;
         if  (!lat || !lon) return res.status(500).json({ success: false, message: "Service is not availble a the moment!"});
 
-        const nearbyHelp = await helpServices.nearbyHelpService(lat, lon, place_id);
+        const nearbyHelp = await helpServices.nearbyHelpService(lat, lon);
         if (!nearbyHelp) return res.status(500).json({ success: false, message: "Service is not availble a the moment!"});
 
-        res.status(200).json({ message: "Nearby help centers gotten" });
+        res.status(200).json({ message: "Nearby help centers gotten", data: nearbyHelp });
         
     } catch (error) {
         logger.error(`Error: ${error.message}`);

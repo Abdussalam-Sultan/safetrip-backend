@@ -1,5 +1,4 @@
 import Contact from "../models/Contact.js";
-import AppError from "../utils/AppError.js";
 
 export const addContact = async (req, res) => {
   try {
@@ -54,16 +53,21 @@ export const updateContact = async (req, res) => {
     const { id } = req.params;
     const userId = req.user?.id;
 
+    delete req.body?.id;
+    delete req.body?.userId;
+    delete req.body?.user_UUID;
+
     const contact = await Contact.findByPk(id);
     
     if (!contact) return res.status(404).json({ message: "Contact not found" });
     
     if (contact.user_UUID !== userId) {
-      res.status(403).json({ error: "You are not authorized to delete this contact" });
+      return res.status(403).json({ error: "You are not authorized to delete this contact" });
     };
 
 
     await contact.update(req.body);
+
     res.json({ success: true, message: `Contact ${id} updated sucessfully`, data: contact });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -79,11 +83,11 @@ export const deleteContact = async (req, res) => {
     const contact = await Contact.findByPk(id);
     
     if (!contact) {
-      res.status(400).json({ error: "Contact not found" });
+      return res.status(400).json({ error: "Contact not found" });
     };
 
     if (contact.user_UUID !== userId) {
-      res.status(403).json({ error: "You are not authorized to delete this contact" });
+      return res.status(403).json({ error: "You are not authorized to delete this contact" });
     }
 
     const deleted = await contact.destroy();

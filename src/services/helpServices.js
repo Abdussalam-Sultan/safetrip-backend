@@ -44,12 +44,12 @@ const nearbyHelpService = async (lat, lon, place_id=null) => {
 
                 const features = response.data.features || [];
 
-                logger.info(`\n\nCategory: ${formattedCategory}, Results: ${features.length} `);
+                // logger.info(`\n\nCategory: ${formattedCategory}, Results: ${features.length} `);
                 
-                features.forEach(element => {
+                // features.forEach(element => {
                     
-                    logger.info(`address: ${element.properties.formatted}, latitude: ${element.properties.lat}, longitude: ${element.properties.lon}`)
-                });
+                //     logger.info(`address: ${element.properties.formatted}, latitude: ${element.properties.lat}, longitude: ${element.properties.lon}`)
+                // });
 
 
                 helpServicesResults[formattedCategory] = features;
@@ -70,7 +70,7 @@ async function coordToLocation(lat, lon) {
   }
 
   try {
-    const apiKey = process.env.GEOAPIFY_API_KEY || "YOUR_API_KEY_HERE";
+    const apiKey = APP_CONFIG.GEOAPIFY_API_KEY || "YOUR_API_KEY_HERE";
     const url = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=${apiKey}`;
 
     const response = await axios.get(url);

@@ -35,7 +35,7 @@ async function registerUser (req, res){
       
     } catch (error) {
       logger.error("Registration Error:", error);
-       throw new AppError(error || "Registration Failed")
+      throw new AppError(error || "Registration Failed")
     }
 };
 

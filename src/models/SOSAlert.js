@@ -33,6 +33,16 @@ const SOSAlert = sequelize.define("SOSAlert", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  status: {
+    type:DataTypes.ENUM("active", "inactive", "suspended"), 
+    allowNull:false, 
+    defaultValue: "active",
+  },
+  severityLevel: {
+    type:DataTypes.ENUM("high", "medium", "low"),
+    allowNull: true,
+    defaultValue: "high"
+  }
 }, {
   timestamps: true,
   updatedAt: false,

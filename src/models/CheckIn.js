@@ -21,11 +21,11 @@ const CheckIn = sequelize.define('CheckIn', {
     type: DataTypes.STRING,
     defaultValue: "I'm safe",
   },
-  lat: {
+  latitude: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
-  long: {
+  longitude: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },

@@ -3,10 +3,10 @@ import CheckIn from "../models/CheckIn.js";
 
 export const getUserTimeline = async (req, res) => {
   try {
-    const { userId } = req.user?.id;
+    const userId = req.user?.id;
 
-    const sosList = await SOS.findAll({ where: { userId } });
-    const checkInList = await CheckIn.findAll({ where: { userId } });
+    const sosList = await SOS.findAll({ where: { user_UUID: userId } });
+    const checkInList = await CheckIn.findAll({ where: { user_UUID: userId } });
 
     const sosEvents = sosList.map(item => ({
       id: item.id,

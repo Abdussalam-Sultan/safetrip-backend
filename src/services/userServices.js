@@ -21,6 +21,7 @@ async function createUser (userData) {
     throw new AppError("A user with this email, username or phone number already exists", 400);
   };
 
+  
   const newUser = await User.create(userData);
     
   return newUser;
@@ -32,16 +33,18 @@ async function verifyUser(email, otp) {
   const user = await User.findOne({ where: { email } });
   if (!user) throw new AppError("User account not found", 400);
   
-  if (!user.otp || !user.otpTime) throw new AppError("OTP already used", 400);
+  if (!user.otp || !user.otpTime) throw new AppError("OTP already used or missin", 400);
   
   if (user.otp !== otp) throw new AppError("Invalid OTP", 400);
   
-  if (user.otpTime < new Date()) throw new AppError("Expired OTP", 400);
-
+  const otpExpiry = new Date(user.otpTime);
+  if (isNaN(otpExpiry.getTime()) || otpExpiry.getTime() < Date.now()) {
+    throw new AppError("Expired OTP", 400);
+  };
   
   user.verified = true;
   user.otp = null;
-  user.otptime = null;
+  user.otpTime = null;
 
   await user.save();
 
@@ -70,11 +73,14 @@ async function loginUser(loginCrendentials) {
   if (!user) throw new AppError("Invalid Email or Password")
 
   //Check to see if password is valid
-  
+  const isMatch = await user.verifyPassword(loginCrendentials.password)
+  if (!isMatch) throw new AppError("Invalid Email or Password")
+
   //manual way to bring in your jsonwebtoken
   const token = await authHandler.createtoken(user);
   const refreshToken = await authHandler.createRefreshToken(user, token);
   return {
+      message: "Login successful",
       userUUID: user.user_UUID, 
       email: user.email, username:
       user.username, phone: user.phoneNumber || null,

@@ -2,20 +2,25 @@ import { Sequelize } from 'sequelize';
 import APP_CONFIG from './APP_CONFIG.js';
 
 //  Create Sequelize instance
-const sequelize = new Sequelize(
-  APP_CONFIG.DB_NAME,
-  APP_CONFIG.DB_USER,
-  APP_CONFIG.DB_PASSWORD,
-  {
-    host: APP_CONFIG.DB_HOST,
-    dialect: 'mysql',
-    logging: true,
-    port: APP_CONFIG.DB_PORT
-  }
-);
+const sequelize = process.env.DATABASE_URL
+  ? new Sequelize(process.env.DATABASE_URL, {
+      dialect: "mysql",
+      logging: false,
+    })
+  : new Sequelize(
+      process.env.DB_NAME,
+      process.env.DB_USER,
+      process.env.DB_PASSWORD,
+      {
+        host: process.env.DB_HOST,
+        port: process.env.DB_PORT,
+        dialect: "mysql",
+        logging: false,
+      }
+    );
 
 
-//  Test the connection immediately
+
 try {
   await sequelize.authenticate();
   console.log(' Database connected successfully!');

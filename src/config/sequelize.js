@@ -3,6 +3,8 @@ import APP_CONFIG from './APP_CONFIG.js';
 
 //  Create Sequelize instance
 console.log("1----DB URL:", process.env.DATABASE_URL);
+console.log("2----DB URL:", APP_CONFIG.DATABASE_URL);
+console.log(process.env);
 const sequelize = new Sequelize(APP_CONFIG.DATABASE_URL, {
   
   dialect: "postgres",

@@ -8,7 +8,7 @@ const sequelize = new Sequelize(
   APP_CONFIG.DB_PASSWORD,
   {
     host: APP_CONFIG.DB_HOST,
-    dialect: 'mysql',
+    dialect: 'postgres',
     logging: false,
     port: APP_CONFIG.DB_PORT
   }

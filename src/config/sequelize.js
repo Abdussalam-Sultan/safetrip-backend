@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize';
 import APP_CONFIG from './APP_CONFIG.js';
 
 //  Create Sequelize instance
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
+const sequelize = new Sequelize(APP_CONFIG.DATABASE_URL, {
   dialect: "postgres",
   logging: false,
   dialectOptions: {
